@@ -25,6 +25,9 @@ class _User {
   Sex sex;
 
   @Column(nullable: false)
+  String pseudo;
+
+  @Column(nullable: false)
   @Validate(onInsert: false, onUpdate: false)
   String guid;
 

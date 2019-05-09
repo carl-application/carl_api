@@ -70,5 +70,8 @@ class _Business {
   @Relate(#businesses)
   Image image;
 
+  @Relate(#businessesLogo)
+  Image logo;
+
   Account account;
 }

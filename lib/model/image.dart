@@ -18,4 +18,6 @@ class _Image {
   String url;
 
   ManagedSet<Business> businesses;
+
+  ManagedSet<Business> businessesLogo;
 }

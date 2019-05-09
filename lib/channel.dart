@@ -2,6 +2,7 @@ import 'package:carl_api/controller/business/business_audiences_controller.dart'
 import 'package:carl_api/controller/business/business_card_color_controller.dart';
 import 'package:carl_api/controller/business/business_card_image_controller.dart';
 import 'package:carl_api/controller/business/business_controller.dart';
+import 'package:carl_api/controller/business/business_logo_controller.dart';
 import 'package:carl_api/controller/business/business_tags_controller.dart';
 import 'package:carl_api/controller/image_controller.dart';
 import 'package:carl_api/controller/user/user_cards_controller.dart';
@@ -83,6 +84,12 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/business/card/image/[:id]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessCardImageController(context));
+
+    /* Handle Businesses Logo image*/
+    router
+        .route("/business/logo")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessLogoController(context));
 
     /* Handle Businesses Card color*/
     router

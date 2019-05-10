@@ -16,8 +16,8 @@ class BusinessController extends ResourceController {
 
     final query = Query<Business>(_context)
       ..where((business) => business.id).equalTo(id)
-      ..join(object: (business) => business.image).returningProperties((image) => [image.url])
-      ..join(object: (business) => business.logo).returningProperties((logo) => [logo.url])
+      ..join(object: (business) => business.image)
+      ..join(object: (business) => business.logo)
       ..join(set: (business) => business.tags).returningProperties((tag) => [tag.name]);
 
     // Check if the user is the owner of the account and, if then, send him his account

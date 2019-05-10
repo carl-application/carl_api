@@ -1,14 +1,15 @@
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/model/business.dart';
 
 class UserVisitInfoResponse implements Serializable {
-  UserVisitInfoResponse(this.userVisitsCount, this.businessVisitsMax);
+  UserVisitInfoResponse(this.userVisitsCount, this.business);
 
   final int userVisitsCount;
-  final int businessVisitsMax;
+  final Business business;
 
   @override
   Map<String, dynamic> asMap() {
-    final map = {"userVisitsCount": userVisitsCount, "businessVisitsMax": businessVisitsMax};
+    final map = {"userVisitsCount": userVisitsCount, "business": business.asMap()};
 
     return map;
   }

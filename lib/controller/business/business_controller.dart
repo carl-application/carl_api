@@ -20,8 +20,6 @@ class BusinessController extends ResourceController {
       ..join(object: (business) => business.logo).returningProperties((logo) => [logo.url])
       ..join(set: (business) => business.tags).returningProperties((tag) => [tag.name]);
 
-
-
     // Check if the user is the owner of the account and, if then, send him his account
     if (ownerAccount.business != null && ownerAccount.business.id == id) {
       query

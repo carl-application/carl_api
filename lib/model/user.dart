@@ -1,4 +1,5 @@
 import 'package:carl_api/model/notification.dart';
+import 'package:carl_api/model/notifications_black_list.dart';
 import 'package:carl_api/model/visit.dart';
 import 'package:uuid/uuid.dart';
 
@@ -36,6 +37,8 @@ class _User {
   DateTime birthDate;
 
   ManagedSet<Visit> visits;
+
+  ManagedSet<NotificationsBlackListed> notificationsBlackListedBusinesses;
 
   ManagedSet<Notification> notifications;
 

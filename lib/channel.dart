@@ -7,6 +7,7 @@ import 'package:carl_api/controller/business/business_logo_controller.dart';
 import 'package:carl_api/controller/business/business_tags_controller.dart';
 import 'package:carl_api/controller/image_controller.dart';
 import 'package:carl_api/controller/user/user_cards_controller.dart';
+import 'package:carl_api/controller/user/user_notifications_blacklist_controller.dart';
 import 'package:carl_api/controller/user/user_visit_controller.dart';
 import 'package:carl_api/controller/user/user_visit_meta_infos_controller.dart';
 import 'package:carl_api/controller/user/user_visit_nfc_controller.dart';
@@ -130,6 +131,12 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/user/visits/scan/[:businessKey]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserVisitScanController(context));
+
+    /* Handle User Notifications Blacklist  */
+    router
+        .route("/user/notifications/blacklist/[:businessId]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserNotificationsBlackListController(context));
 
     return router;
   }

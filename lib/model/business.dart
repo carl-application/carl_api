@@ -1,5 +1,6 @@
 import 'package:carl_api/model/image.dart';
 import 'package:carl_api/model/notification.dart';
+import 'package:carl_api/model/notifications_black_list.dart';
 import 'package:carl_api/model/tag.dart';
 import 'package:carl_api/model/visit.dart';
 import 'package:uuid/uuid.dart';
@@ -52,6 +53,8 @@ class _Business {
   ManagedSet<Tag> tags;
 
   ManagedSet<Visit> visits;
+
+  ManagedSet<NotificationsBlackListed> notificationsBlackListedUsers;
 
   ManagedSet<Notification> notifications;
 

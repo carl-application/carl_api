@@ -9,6 +9,7 @@ class AdminController extends ResourceController {
 
   @Operation.post("userId")
   Future<Response> makeUserAdmin(@Bind.path("userId") int userId) async {
+    /*
     final adminAccountQuery = Query<Account>(_context)
       ..where((account) => account.id).identifiedBy(request.authorization.ownerID)
       ..where((account) => account.isAdmin).equalTo(true);
@@ -19,7 +20,7 @@ class AdminController extends ResourceController {
     if (account == null) {
       return Response.unauthorized();
     }
-
+    */
     final updateAccountToAdminQuery = Query<Account>(_context)
       ..values.isAdmin = true
       ..where((account) => account.user.id).equalTo(userId);

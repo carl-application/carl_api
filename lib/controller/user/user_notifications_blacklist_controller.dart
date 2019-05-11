@@ -10,6 +10,28 @@ class UserNotificationsBlackListController extends ResourceController {
 
   final ManagedContext _context;
 
+  @Operation.get("businessId")
+  Future<Response> getIfBusinessIsBlackListed(@Bind.path("businessId") int businessId) async {
+    final getUserQuery = Query<User>(_context)
+      ..where((user) => user.account.id).identifiedBy(request.authorization.ownerID);
+
+    final user = await getUserQuery.fetchOne();
+
+    if (user == null) {
+      return Response.unauthorized();
+    }
+
+    final getNotificationBlackListedQuery = Query<NotificationsBlackListed>(_context)
+      ..where((notificationBlackListed) => notificationBlackListed.business.id).equalTo(businessId)
+      ..where((notificationBlackListed) => notificationBlackListed.user.id).equalTo(user.id);
+
+    final element = await getNotificationBlackListedQuery.fetchOne();
+
+    NotificationsBlackListResponse toggleResponse = NotificationsBlackListResponse(element != null);
+
+    return Response.ok(toggleResponse);
+  }
+
   @Operation.get()
   Future<Response> getAllBlackListedBusinesses() async {
     final getUserQuery = Query<User>(_context)
@@ -44,11 +66,11 @@ class UserNotificationsBlackListController extends ResourceController {
 
     final currentNotificationBlackListed = await getCurrentNotificationBlackListedQuery.fetchOne();
 
-    ToggleNotificationsBlackListResponse toggleResponse;
+    NotificationsBlackListResponse toggleResponse;
 
     if (currentNotificationBlackListed != null) {
       await getCurrentNotificationBlackListedQuery.delete();
-      toggleResponse = ToggleNotificationsBlackListResponse(false);
+      toggleResponse = NotificationsBlackListResponse(false);
     } else {
       final getBusinessQuery = Query<Business>(_context)..where((business) => business.id).equalTo(businessId);
       final business = await getBusinessQuery.fetchOne();
@@ -58,7 +80,7 @@ class UserNotificationsBlackListController extends ResourceController {
         ..values.user = user;
 
       await insertionQuery.insert();
-      toggleResponse = ToggleNotificationsBlackListResponse(true);
+      toggleResponse = NotificationsBlackListResponse(true);
     }
 
     return Response.ok(toggleResponse);

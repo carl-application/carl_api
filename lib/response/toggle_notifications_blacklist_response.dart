@@ -1,7 +1,7 @@
 import 'package:carl_api/carl_api.dart';
 
-class ToggleNotificationsBlackListResponse implements Serializable {
-  ToggleNotificationsBlackListResponse(this.isBlackListed);
+class NotificationsBlackListResponse implements Serializable {
+  NotificationsBlackListResponse(this.isBlackListed);
 
   final bool isBlackListed;
 

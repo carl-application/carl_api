@@ -17,7 +17,7 @@ class BusinessLogoController extends ResourceController {
 
     final account = await getBusinessQuery.fetchOne();
 
-    if (account == null) {
+    if (account == null || image.type != ImageType.logo) {
       return Response.badRequest();
     }
 

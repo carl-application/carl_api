@@ -1,3 +1,4 @@
+import 'package:carl_api/controller/admin_controller.dart';
 import 'package:carl_api/controller/business/business_audiences_controller.dart';
 import 'package:carl_api/controller/business/business_card_color_controller.dart';
 import 'package:carl_api/controller/business/business_card_image_controller.dart';
@@ -60,6 +61,9 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/register")
         .link(() => Authorizer.basic(authServer))
         .link(() => RegisterController(context, authServer));
+
+    /* Handle Admin accounts */
+    router.route("/admin/[:userId]").link(() => Authorizer.bearer(authServer)).link(() => AdminController(context));
 
     /* Handle Images*/
     router.route("/images/[:id]").link(() => Authorizer.bearer(authServer)).link(() => ImageController(context));

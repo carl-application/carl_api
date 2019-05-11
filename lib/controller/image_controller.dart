@@ -38,7 +38,7 @@ class ImageController extends ResourceController {
 
   @Operation.get()
   Future<Response> getImages() async {
-    final getImageQuery = Query<Image>(_context);
+    final getImageQuery = Query<Image>(_context)..where((image) => image.type).equalTo(ImageType.image);
 
     return Response.ok(await getImageQuery.fetch());
   }

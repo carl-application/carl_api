@@ -1,6 +1,5 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
-import 'package:carl_api/model/business.dart';
 import 'package:carl_api/model/user.dart';
 
 class UserCardsController extends ResourceController {
@@ -19,13 +18,26 @@ class UserCardsController extends ResourceController {
       return Response.unauthorized();
     }
 
+    print("User = ${user.toString()}, ${user.id}");
+
+    /*
     final a = Query<Business>(_context)
-      ..where((business) => business.visits.where((visit) => visit.user.id == user.id).length).greaterThan(1);
+      ..join(set: (business) => business.visits).where((visit) => visit.user.id).equalTo(user.id)
+      ..where((business) => business.visits.length).greaterThan(1);
 
     a.join(object: (business) => business.image).returningProperties((image) => [image.url]);
     a.join(object: (business) => business.logo);
     //a.join(set: (business) => business.tags).returningProperties((tag) => [tag.name]);
+    */
 
-    return Response.ok(await a.fetch());
+    final test = Query<User>(_context)
+      ..where((user) => user.id).equalTo(user.id)
+      ..join(set: (user) => user.visits).join(object: (visit) => visit.business);
+
+    final tmp = await test.fetch();
+
+    final businesses = tmp.expand((u) => u.visits.map((v) => v.business));
+
+    return Response.ok(businesses.toSet().toList());
   }
 }

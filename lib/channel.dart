@@ -15,6 +15,7 @@ import 'package:carl_api/controller/user/user_visit_scan_controller.dart';
 import 'package:carl_api/model/account.dart';
 
 import 'carl_api.dart';
+import 'controller/business/business_send_notification_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
@@ -26,6 +27,7 @@ import 'controller/user/user_notification_token_controller.dart';
 class CarlApiChannel extends ApplicationChannel {
   AuthServer authServer;
   ManagedContext context;
+  String firebaseServerKey;
 
   /// Initialize services in this method.
   ///
@@ -39,6 +41,7 @@ class CarlApiChannel extends ApplicationChannel {
 
     final config = CarlApiConfiguration(options.configurationFilePath);
 
+    firebaseServerKey = config.firebaseServerKey;
     context = contextWithConnectionInfo(config.database);
 
     final authStorage = ManagedAuthDelegate<Account>(context);
@@ -102,6 +105,12 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/business/card/color/[:color]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessCardColorController(context));
+
+    /* Handle Businesses Card color*/
+    router
+        .route("/business/notifications")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessSendNotificationController(context, firebaseServerKey));
 
     /* Handle User profile with bearer token */
     router
@@ -171,4 +180,5 @@ class CarlApiConfiguration extends Configuration {
   CarlApiConfiguration(String fileName) : super.fromFile(File(fileName));
 
   DatabaseConfiguration database;
+  String firebaseServerKey;
 }

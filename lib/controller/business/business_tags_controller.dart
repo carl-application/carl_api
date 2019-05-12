@@ -16,7 +16,7 @@ class TagController extends ResourceController {
       ..where((account) => account.business).isNotNull();
 
     final account = await getBusinessQuery.fetchOne();
-    if (account.business == null) {
+    if (account == null || account.business == null) {
       return Response.notFound();
     }
 

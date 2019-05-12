@@ -29,6 +29,9 @@ class _Notification {
   String title;
 
   @Column(nullable: false)
+  String shortDescription;
+
+  @Column(nullable: false)
   String description;
 
   @Column(defaultValue: "false")

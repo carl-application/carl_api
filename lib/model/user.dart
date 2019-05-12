@@ -28,6 +28,9 @@ class _User {
   @Column(nullable: false)
   String pseudo;
 
+  @Column(nullable: true)
+  String notificationsToken;
+
   @Column(nullable: false)
   @Validate(onInsert: false, onUpdate: false)
   String guid;

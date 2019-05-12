@@ -15,9 +15,9 @@ class UserCardsController extends ResourceController {
 
     final user = await getUserQuery.fetchOne();
 
-    final test = Query<User>(_context)
-      ..where((user) => user.id).equalTo(user.id)
-      ..join(set: (user) => user.visits).join(object: (visit) => visit.business);
+    if (user == null) {
+      return Response.unauthorized();
+    }
 
     final a = Query<Business>(_context)
       ..where((business) => business.visits.where((visit) => visit.user.id == user.id).length).greaterThan(1);

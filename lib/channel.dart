@@ -17,6 +17,7 @@ import 'package:carl_api/model/account.dart';
 import 'carl_api.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
+import 'controller/user/user_notification_token_controller.dart';
 
 /// This type initializes an application.
 ///
@@ -107,6 +108,12 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/user/[:id]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserController(context, authServer));
+
+    /* Handle User notification token */
+    router
+        .route("/user/notifications/token/[:token]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserNotificationTokenController(context));
 
     /* Handle User getting visits on business */
     router.route("/user/visits").link(() => Authorizer.bearer(authServer)).link(() => UserVisitController(context));

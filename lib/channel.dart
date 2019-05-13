@@ -19,6 +19,9 @@ import 'controller/business/business_send_notification_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
+import 'controller/user/user_read_notifications_controller.dart';
+import 'controller/user/user_unread_notifications_controller.dart';
+import 'controller/user/user_unread_notifications_count_controller.dart';
 
 /// This type initializes an application.
 ///
@@ -123,6 +126,24 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/user/notifications/token/[:token]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserNotificationTokenController(context));
+
+    /* Handle User read notifications count */
+    router
+        .route("/user/notifications")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserReadNotificationsController(context));
+
+    /* Handle User unread notifications count */
+    router
+        .route("/user/notifications/unread/count")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserUnreadNotificationsCountController(context));
+
+    /* Handle User unread notifications */
+    router
+        .route("/user/notifications/unread/[:notificationId]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserUnreadNotificationsController(context));
 
     /* Handle User getting visits on business */
     router.route("/user/visits").link(() => Authorizer.bearer(authServer)).link(() => UserVisitController(context));

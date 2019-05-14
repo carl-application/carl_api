@@ -40,7 +40,8 @@ class UserUnreadNotificationsController extends ResourceController {
 
     final getUnreadNotificationsCountQuery = Query<Notification>(_context)
       ..where((notification) => notification.seen).equalTo(false)
-      ..where((notification) => notification.user.id).equalTo(user.id);
+      ..where((notification) => notification.user.id).equalTo(user.id)
+      ..join(object: (notification) => notification.business).returningProperties((business) => [business.name]);
 
     final notifications = await getUnreadNotificationsCountQuery.fetch();
     return Response.ok(notifications);

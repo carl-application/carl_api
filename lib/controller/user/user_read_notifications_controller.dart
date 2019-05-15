@@ -24,8 +24,35 @@ class UserReadNotificationsController extends ResourceController {
       ..where((notification) => notification.user.id).equalTo(user.id)
       ..join(object: (notification) => notification.business).returningProperties((business) => [business.name]);
 
-
     final notifications = await getReadNotificationsCountQuery.fetch();
     return Response.ok(notifications);
+  }
+
+  @Operation.get("id")
+  Future<Response> getNotificationDetail(@Bind.path("id") int id) async {
+    final getUserQuery = Query<User>(_context)
+      ..where((user) => user.account.id).identifiedBy(request.authorization.ownerID);
+
+    final user = await getUserQuery.fetchOne();
+
+    if (user == null) {
+      return Response.unauthorized();
+    }
+
+    final updateQuery = Query<Notification>(_context)
+      ..values.seen = true
+      ..where((notification) => notification.user.id).equalTo(user.id)
+      ..where((notification) => notification.id).equalTo(id);
+
+    await updateQuery.updateOne();
+
+    final getDetailNotificationQuery = Query<Notification>(_context)
+      ..where((notification) => notification.id).equalTo(id)
+      ..where((notification) => notification.user.id).equalTo(user.id)
+      ..join(object: (notification) => notification.business).returningProperties((business) => [business.name])
+      ..sortBy((notification) => notification.date, QuerySortOrder.descending);
+
+    final notification = await getDetailNotificationQuery.fetchOne();
+    return Response.ok(notification);
   }
 }

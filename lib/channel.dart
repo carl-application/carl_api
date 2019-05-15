@@ -129,7 +129,7 @@ class CarlApiChannel extends ApplicationChannel {
 
     /* Handle User read notifications count */
     router
-        .route("/user/notifications")
+        .route("/user/notifications/[:id]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserReadNotificationsController(context));
 

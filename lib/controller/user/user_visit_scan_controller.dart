@@ -21,7 +21,6 @@ class UserVisitScanController extends ResourceController {
 
     final user = await findUserQuery.fetchOne();
 
-    print("businessKey = ${businessKey}");
     if (user == null) {
       return Response.unauthorized();
     }
@@ -37,11 +36,11 @@ class UserVisitScanController extends ResourceController {
       ..values.user = user
       ..values.type = VisitValidationType.scan;
 
-    final updateBusinessKey = Query<Business>(_context)
-      ..values.temporaryKey = Uuid().v4()
-      ..where((b) => b.id).identifiedBy(business.id);
-
-    await updateBusinessKey.update();
+//    final updateBusinessKey = Query<Business>(_context)
+//      ..values.temporaryKey = Uuid().v4()
+//      ..where((b) => b.id).identifiedBy(business.id);
+//
+//    await updateBusinessKey.update();
 
     final visit = await createVisit.insert();
     final getUserVisitsCount = Query<Visit>(_context)

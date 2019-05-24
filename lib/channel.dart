@@ -20,6 +20,7 @@ import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
 import 'controller/user/user_read_notifications_controller.dart';
+import 'controller/user/user_search_business_controller.dart';
 import 'controller/user/user_unread_notifications_controller.dart';
 import 'controller/user/user_unread_notifications_count_controller.dart';
 
@@ -114,6 +115,12 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/business/notifications")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessSendNotificationController(context, firebaseServerKey));
+
+    /* Handle Business searching */
+    router
+        .route("/search/business/[:query]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserBusinessSearchController(context));
 
     /* Handle User profile with bearer token */
     router

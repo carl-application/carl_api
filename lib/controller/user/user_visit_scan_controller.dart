@@ -4,7 +4,6 @@ import 'package:carl_api/model/business.dart';
 import 'package:carl_api/model/user.dart';
 import 'package:carl_api/model/visit.dart';
 import 'package:carl_api/response/valid_visit_response.dart';
-import 'package:uuid/uuid.dart';
 
 class UserVisitScanController extends ResourceController {
   UserVisitScanController(this._context);

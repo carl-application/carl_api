@@ -20,16 +20,6 @@ class UserCardsController extends ResourceController {
 
     print("User = ${user.toString()}, ${user.id}");
 
-    /*
-    final a = Query<Business>(_context)
-      ..join(set: (business) => business.visits).where((visit) => visit.user.id).equalTo(user.id)
-      ..where((business) => business.visits.length).greaterThan(1);
-
-    a.join(object: (business) => business.image).returningProperties((image) => [image.url]);
-    a.join(object: (business) => business.logo);
-    //a.join(set: (business) => business.tags).returningProperties((tag) => [tag.name]);
-    */
-
     final test = Query<User>(_context)
       ..where((user) => user.id).equalTo(user.id)
       ..join(set: (user) => user.visits).join(object: (visit) => visit.business);

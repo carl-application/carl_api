@@ -21,10 +21,17 @@ class UserBusinessSearchController extends ResourceController {
 
     final getBusinessesByNameQuery = Query<Business>(_context)
       ..where((business) => business.name).contains(query, caseSensitive: false)
-      ..join(set: (business) => business.tags).returningProperties((tag) => [tag.name]);
+      ..join(set: (business) => business.tags).returningProperties((tag) => [tag.name])
+      ..join(object: (business) => business.logo);
 
-    final businesses = await getBusinessesByNameQuery.fetch();
+    /*final getBusinessesByTagsQuery = Query<Business>(_context)
+      ..join(set: (business) => business.tags).where((tag) => tag.name).contains(query, caseSensitive: false)
+      ..join(object: (business) => business.image);*/
 
-    return Response.ok(businesses);
+    final businessesByName = await getBusinessesByNameQuery.fetch();
+    //final businessesByTags = await getBusinessesByTagsQuery.fetch();
+
+    //businessesByName.addAll(businessesByTags);
+    return Response.ok(businessesByName);
   }
 }

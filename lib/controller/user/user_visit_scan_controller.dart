@@ -1,6 +1,7 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
 import 'package:carl_api/model/business.dart';
+import 'package:carl_api/model/customer_relationship.dart';
 import 'package:carl_api/model/user.dart';
 import 'package:carl_api/model/visit.dart';
 import 'package:carl_api/response/valid_visit_response.dart';
@@ -35,13 +36,22 @@ class UserVisitScanController extends ResourceController {
       ..values.user = user
       ..values.type = VisitValidationType.scan;
 
-//    final updateBusinessKey = Query<Business>(_context)
-//      ..values.temporaryKey = Uuid().v4()
-//      ..where((b) => b.id).identifiedBy(business.id);
-//
-//    await updateBusinessKey.update();
-
     final visit = await createVisit.insert();
+
+    final alreadyExistCustomerRelationshipQuery = Query<CustomerRelationship>(_context)
+      ..where((relationship) => relationship.business.id).equalTo(business.id)
+      ..where((relationship) => relationship.user.id).equalTo(user.id);
+
+    final relationship = await alreadyExistCustomerRelationshipQuery.fetchOne();
+
+    if (relationship == null) {
+      final createRelationshipQuery = Query<CustomerRelationship>(_context)
+        ..values.business = business
+        ..values.user = user;
+
+      await createRelationshipQuery.insert();
+    }
+
     final getUserVisitsCount = Query<Visit>(_context)
       ..where((visit) => visit.business.id).identifiedBy(business.id)
       ..where((visit) => visit.user.id).identifiedBy(user.id);

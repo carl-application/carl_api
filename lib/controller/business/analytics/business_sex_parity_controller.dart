@@ -1,0 +1,45 @@
+import 'package:aqueduct/aqueduct.dart';
+import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/model/account.dart';
+import 'package:carl_api/response/business_customers_by_sex_count_response.dart';
+
+class BusinessSexParityController extends ResourceController {
+  BusinessSexParityController(this._context);
+
+  final ManagedContext _context;
+
+  @Operation.get()
+  Future<Response> getSexParity() async {
+    final getBusinessQuery = Query<Account>(_context)
+      ..where((account) => account.id).equalTo(request.authorization.ownerID)
+      ..where((account) => account.business).isNotNull();
+
+    final account = await getBusinessQuery.fetchOne();
+    if (account == null) {
+      return Response.unauthorized();
+    }
+
+    final queryWomen = _getQueryFor("woman", account.business.id);
+    final queryMen = _getQueryFor("man", account.business.id);
+    final queryNp = _getQueryFor("np", account.business.id);
+
+    final getWomenCount = await _context.persistentStore.execute(queryWomen);
+    final getMenCount = await _context.persistentStore.execute(queryMen);
+    final getNpCount = await _context.persistentStore.execute(queryNp);
+
+    final response = BusinessCustomersBySexCountResponse(
+        women: getWomenCount[0][0] as int, men: getMenCount[0][0] as int, np: getNpCount[0][0] as int);
+    return Response.ok(response);
+  }
+
+  String _getQueryFor(String sex, int businessId) {
+    return """
+    SELECT Count(_user.id)
+    FROM _customerrelationship
+    INNER JOIN _user
+    ON _customerrelationship.user_id = _user.id
+    AND _user.sex = '$sex'
+    AND _customerrelationship.business_id = ${businessId};
+    """;
+  }
+}

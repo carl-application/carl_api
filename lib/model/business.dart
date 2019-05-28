@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import './account.dart';
 import '../carl_api.dart';
+import 'customer_relationship.dart';
 
 enum PlanType { basic, premium }
 
@@ -53,6 +54,8 @@ class _Business {
   ManagedSet<Tag> tags;
 
   ManagedSet<Visit> visits;
+
+  ManagedSet<CustomerRelationship> customerRelationship;
 
   ManagedSet<NotificationsBlackListed> notificationsBlackListedUsers;
 

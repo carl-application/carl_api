@@ -5,8 +5,9 @@ import 'package:uuid/uuid.dart';
 
 import './account.dart';
 import '../carl_api.dart';
+import 'customer_relationship.dart';
 
-enum Sex { man, woman }
+enum Sex { man, woman, np }
 
 class User extends ManagedObject<_User> implements _User {
   @Serialize(input: false, output: true)
@@ -40,6 +41,8 @@ class _User {
   DateTime birthDate;
 
   ManagedSet<Visit> visits;
+
+  ManagedSet<CustomerRelationship> customerRelationship;
 
   ManagedSet<NotificationsBlackListed> notificationsBlackListedBusinesses;
 

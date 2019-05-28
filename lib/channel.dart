@@ -15,6 +15,9 @@ import 'package:carl_api/controller/user/user_visit_scan_controller.dart';
 import 'package:carl_api/model/account.dart';
 
 import 'carl_api.dart';
+import 'controller/business/analytics/business_nb_customers_controller.dart';
+import 'controller/business/analytics/business_nb_visits_for_date_controller.dart';
+import 'controller/business/analytics/business_sex_parity_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
@@ -122,6 +125,21 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/search/business/[:query]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserBusinessSearchController(context));
+
+    router
+        .route("/business/analytics/visits/date")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessNbVisitsForDateController(context));
+
+    router
+        .route("/business/analytics/customer/count")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessNbCustomersController(context));
+
+    router
+        .route("/business/analytics/customer/sex/count/[:sex]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessSexParityController(context));
 
     /* Handle User profile with bearer token */
     router

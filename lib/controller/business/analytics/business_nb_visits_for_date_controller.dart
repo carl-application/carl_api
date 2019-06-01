@@ -2,7 +2,7 @@ import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/visit.dart';
-import 'package:carl_api/response/business_visits_count_response.dart';
+import 'package:carl_api/response/business_count_for_date_response.dart';
 
 class BusinessNbVisitsForDateController extends ResourceController {
   BusinessNbVisitsForDateController(this._context);
@@ -21,23 +21,53 @@ class BusinessNbVisitsForDateController extends ResourceController {
     }
 
     var date = DateTime.tryParse(dateSent);
-    date ??= DateTime.now().toUtc();
 
-    print("date = ${date}");
+    if (date == null) {
+      return Response.notFound();
+    }
 
-    final thisMorning = date.subtract(Duration(hours: date.hour, minutes: date.minute, seconds: date.second, milliseconds: date.millisecond, microseconds: date.microsecond));
-    final tomorrow = date.subtract(Duration(days: -1, hours: date.hour, minutes: date.minute, seconds: date.second, milliseconds: date.millisecond, microseconds: date.microsecond));
+    date = date.toUtc();
 
-    print("thisMorning = $thisMorning}");
-    print("tomorrow = $tomorrow}");
+    final List<int> weekCounts = [];
+
+    for (var i = 0; i < 7; i++) {
+      final DateTime d = date.subtract(Duration(days: i));
+      final requestedDateVisitsCount = await _getVisitsCountForDate(d, account);
+      weekCounts.add(requestedDateVisitsCount);
+    }
+
+    final requestedCount = weekCounts[0];
+    final prevDayCount = weekCounts[1];
+
+    print("requestedCount : $requestedCount");
+    print("prevDayCount : $prevDayCount");
+    print("prevDayCount : $prevDayCount");
+    final progress = prevDayCount != 0 ? (requestedCount - prevDayCount / prevDayCount) * 100 : 0.0;
+
+    return Response.ok(
+        BusinessCountForDateResponse(count: requestedCount, weekCounts: weekCounts, evolution: progress, hasEvolve: prevDayCount != 0));
+  }
+
+  Future<int> _getVisitsCountForDate(DateTime date, Account account) async {
+    final morning = date.subtract(Duration(
+        hours: date.hour,
+        minutes: date.minute,
+        seconds: date.second,
+        milliseconds: date.millisecond,
+        microseconds: date.microsecond));
+    final tomorrow = date.subtract(Duration(
+        days: -1,
+        hours: date.hour,
+        minutes: date.minute,
+        seconds: date.second,
+        milliseconds: date.millisecond,
+        microseconds: date.microsecond));
 
     final getVisitsQuery = Query<Visit>(_context)
       ..where((visit) => visit.business.id).identifiedBy(account.business.id)
       ..where((visit) => visit.date).lessThan(tomorrow)
-      ..where((visit) => visit.date).greaterThan(thisMorning);
+      ..where((visit) => visit.date).greaterThan(morning);
 
-    final visitsCount = await getVisitsQuery.reduce.count();
-
-    return Response.ok(BusinessVisitsCountResponse(visitsCount));
+    return getVisitsQuery.reduce.count();
   }
 }

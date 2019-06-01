@@ -1,13 +1,21 @@
 import 'package:carl_api/carl_api.dart';
 
-class BusinessVisitsCountResponse implements Serializable {
-  BusinessVisitsCountResponse(this.visitsCount);
+class BusinessCountForDateResponse implements Serializable {
+  BusinessCountForDateResponse({this.count, this.weekCounts, this.evolution, this.hasEvolve});
 
-  final int visitsCount;
+  final int count;
+  final List<int> weekCounts;
+  final double evolution;
+  final bool hasEvolve;
 
   @override
   Map<String, dynamic> asMap() {
-    final map = {"visitsCount": visitsCount};
+    final map = {
+      "count": count,
+      "weekCounts": weekCounts.toList(),
+      "evolution": evolution,
+      "hasEvolve": hasEvolve
+    };
 
     return map;
   }

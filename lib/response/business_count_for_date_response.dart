@@ -1,10 +1,12 @@
 import 'package:carl_api/carl_api.dart';
 
 class BusinessCountForDateResponse implements Serializable {
-  BusinessCountForDateResponse({this.count, this.weekCounts, this.evolution, this.hasEvolve});
+  BusinessCountForDateResponse(
+      {this.count, this.weekCounts, this.correspondingDaysOfWeek, this.evolution, this.hasEvolve});
 
   final int count;
   final List<int> weekCounts;
+  final List<int> correspondingDaysOfWeek;
   final double evolution;
   final bool hasEvolve;
 
@@ -13,6 +15,7 @@ class BusinessCountForDateResponse implements Serializable {
     final map = {
       "count": count,
       "weekCounts": weekCounts.toList(),
+      "correspondingDaysOfWeek": correspondingDaysOfWeek.toList(),
       "evolution": evolution,
       "hasEvolve": hasEvolve
     };

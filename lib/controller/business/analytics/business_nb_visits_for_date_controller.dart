@@ -29,9 +29,11 @@ class BusinessNbVisitsForDateController extends ResourceController {
     date = date.toUtc();
 
     final List<int> weekCounts = [];
+    final List<int> correspondingDaysOfWeeks = [];
 
     for (var i = 0; i < 7; i++) {
       final DateTime d = date.subtract(Duration(days: i));
+      correspondingDaysOfWeeks.add(d.weekday);
       final requestedDateVisitsCount = await _getVisitsCountForDate(d, account);
       weekCounts.add(requestedDateVisitsCount);
     }
@@ -44,8 +46,12 @@ class BusinessNbVisitsForDateController extends ResourceController {
     print("prevDayCount : $prevDayCount");
     final progress = prevDayCount != 0 ? (requestedCount - prevDayCount / prevDayCount) * 100 : 0.0;
 
-    return Response.ok(
-        BusinessCountForDateResponse(count: requestedCount, weekCounts: weekCounts, evolution: progress, hasEvolve: prevDayCount != 0));
+    return Response.ok(BusinessCountForDateResponse(
+        count: requestedCount,
+        weekCounts: weekCounts,
+        correspondingDaysOfWeek: correspondingDaysOfWeeks,
+        evolution: progress,
+        hasEvolve: prevDayCount != 0));
   }
 
   Future<int> _getVisitsCountForDate(DateTime date, Account account) async {

@@ -20,11 +20,15 @@ class BusinessNbVisitsForDateController extends ResourceController {
       return Response.unauthorized();
     }
 
+    print("Date sent = $dateSent");
     var date = DateTime.tryParse(dateSent);
 
     if (date == null) {
       return Response.notFound();
     }
+
+    print("Date parsed = $date");
+
 
     date = date.toUtc();
 
@@ -44,8 +48,8 @@ class BusinessNbVisitsForDateController extends ResourceController {
     print("requestedCount : $requestedCount");
     print("prevDayCount : $prevDayCount");
     print("prevDayCount : $prevDayCount");
-    final progress = prevDayCount != 0 ? (requestedCount - prevDayCount / prevDayCount) * 100 : 0.0;
-
+    final progress = prevDayCount != 0 ? ((requestedCount - prevDayCount) / prevDayCount * 100) : 0.0;
+    print("progress = $progress");
     return Response.ok(BusinessCountForDateResponse(
         count: requestedCount,
         weekCounts: weekCounts,

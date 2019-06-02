@@ -17,6 +17,7 @@ import 'package:carl_api/model/account.dart';
 import 'carl_api.dart';
 import 'controller/business/analytics/business_nb_customers_controller.dart';
 import 'controller/business/analytics/business_nb_visits_for_date_controller.dart';
+import 'controller/business/analytics/business_nb_visits_for_last_twelve_months_controller.dart';
 import 'controller/business/analytics/business_sex_parity_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
 import 'controller/register_controller.dart';
@@ -130,6 +131,11 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/business/analytics/visits/date")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessNbVisitsForDateController(context));
+
+    router
+        .route("/business/analytics/visits")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessNbVisitsForLastTwelveMonthsController(context));
 
     router
         .route("/business/analytics/customer/count")

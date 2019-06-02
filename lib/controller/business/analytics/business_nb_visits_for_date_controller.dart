@@ -55,7 +55,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
         weekCounts: weekCounts,
         correspondingDaysOfWeek: correspondingDaysOfWeeks,
         evolution: progress,
-        hasEvolve: prevDayCount != 0));
+        hasEvolve: prevDayCount != 0 && prevDayCount != requestedCount));
   }
 
   Future<int> _getVisitsCountForDate(DateTime date, Account account) async {

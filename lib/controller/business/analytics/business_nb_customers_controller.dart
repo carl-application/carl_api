@@ -47,7 +47,7 @@ class BusinessNbCustomersController extends ResourceController {
         weekCounts: weekCounts,
         correspondingDaysOfWeek: correspondingDaysOfWeeks,
         evolution: progress,
-        hasEvolve: prevDayCount != 0));
+        hasEvolve: prevDayCount != 0 && prevDayCount != requestedCount));
   }
 
   Future<int> _getCustomersCountForDate(DateTime date, Account account) async {

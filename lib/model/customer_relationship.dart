@@ -9,12 +9,16 @@ class CustomerRelationship extends ManagedObject<_CustomerRelationship> implemen
 
   @override
   void willInsert() {
+    date = DateTime.now().toUtc();
   }
 }
 
 class _CustomerRelationship {
   @primaryKey
   int id;
+
+  @Column()
+  DateTime date;
 
   @Relate(#customerRelationship)
   Business business;

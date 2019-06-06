@@ -51,8 +51,11 @@ class BusinessAgeRepartitionController extends ResourceController {
     return """
     SELECT Count(_user.id)
     FROM _user
+    INNER JOIN _customerrelationship
+    ON _customerrelationship.user_id = _user.id
     WHERE date_part('year',age(birthdate)) > $ageMin
-    AND date_part('year',age(birthdate)) <= $ageMax;
+    AND date_part('year',age(birthdate)) <= $ageMax
+    AND _customerrelationship.business_id = ${businessId};
     """;
   }
 }

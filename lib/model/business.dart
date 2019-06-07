@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import './account.dart';
 import '../carl_api.dart';
+import 'campaign.dart';
 import 'customer_relationship.dart';
 
 enum PlanType { basic, premium }
@@ -52,6 +53,8 @@ class _Business {
   int fidelityMax;
 
   ManagedSet<Tag> tags;
+
+  ManagedSet<Campaign> campaigns;
 
   ManagedSet<Visit> visits;
 

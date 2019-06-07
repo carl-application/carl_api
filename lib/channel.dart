@@ -1,5 +1,5 @@
 import 'package:carl_api/controller/admin_controller.dart';
-import 'package:carl_api/controller/business/business_audiences_controller.dart';
+import 'package:carl_api/controller/business/business_campaigns_controller.dart';
 import 'package:carl_api/controller/business/business_card_color_controller.dart';
 import 'package:carl_api/controller/business/business_card_image_controller.dart';
 import 'package:carl_api/controller/business/business_controller.dart';
@@ -21,6 +21,7 @@ import 'controller/business/analytics/business_nb_visits_for_date_controller.dar
 import 'controller/business/analytics/business_nb_visits_for_last_twelve_months_controller.dart';
 import 'controller/business/analytics/business_sex_parity_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
+import 'controller/business/business_send_notification_to_campaign_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
@@ -89,11 +90,17 @@ class CarlApiChannel extends ApplicationChannel {
     /* Handle Business profile with bearer token */
     router.route("/business/[:id]").link(() => Authorizer.bearer(authServer)).link(() => BusinessController(context));
 
-    /* Handle Business profile with bearer token */
+    /* Handle Business campaigns with bearer token */
     router
-        .route("/business/audiences")
+        .route("/business/campaigns")
         .link(() => Authorizer.bearer(authServer))
-        .link(() => BusinessAudiencesController(context));
+        .link(() => BusinessCampaignsController(context));
+
+    /* Handle Business campaigns  notifications with bearer token */
+    router
+        .route("/business/campaigns/notifications")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessSendNotificationToCampaignController(context, firebaseServerKey));
 
     /* Handle Businesses Tags*/
     router.route("/business/tags").link(() => Authorizer.bearer(authServer)).link(() => TagController(context));

@@ -21,7 +21,6 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
   Future<Response> sendNotificationToCampaign(
     @Bind.query('targetCampaignId') int targetCampaignId,
     @Bind.query("title") String title,
-    @Bind.query("shortDescription") String shortDescription,
     @Bind.query("description") String description,
   ) async {
     final getAccountQuery = Query<Account>(_context)
@@ -122,7 +121,6 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
       final insertNotificationQuery = Query<Notification>(_context)
         ..values.type = NotificationType.simple
         ..values.title = title
-        ..values.shortDescription = shortDescription
         ..values.description = description
         ..values.user = user
         ..values.business = account.business;

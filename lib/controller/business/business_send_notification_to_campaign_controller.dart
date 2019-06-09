@@ -147,6 +147,10 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
       tokens.remove(token[0]);
     });
 
+    if (tokens.isEmpty) {
+      return Response.ok(BusinessSendNotificationResponse(success: true, nbMatchedUsers: tokensAndIdsList.length, error: null));
+    }
+
     final response = await http.post("https://fcm.googleapis.com/fcm/send",
         headers: {
           HttpHeaders.authorizationHeader: "key=$firebaseServerKey",

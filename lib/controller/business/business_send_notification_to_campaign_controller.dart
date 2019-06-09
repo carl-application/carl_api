@@ -154,7 +154,7 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
         },
         body: json.encode({
           "registration_ids": tokens,
-          "notification": {"body": shortDescription, "title": business.name}
+          "notification": {"body": title, "title": business.name}
         }));
 
     if (response.statusCode != 200) {

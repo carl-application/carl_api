@@ -22,7 +22,8 @@ class UserReadNotificationsController extends ResourceController {
     final getReadNotificationsCountQuery = Query<Notification>(_context)
       ..where((notification) => notification.seen).equalTo(true)
       ..where((notification) => notification.user.id).equalTo(user.id)
-      ..join(object: (notification) => notification.business).returningProperties((business) => [business.name]);
+      ..join(object: (notification) => notification.business).returningProperties((business) => [business.name])
+      ..sortBy((notification) => notification.date, QuerySortOrder.descending);
 
     final notifications = await getReadNotificationsCountQuery.fetch();
     return Response.ok(notifications);
@@ -49,8 +50,7 @@ class UserReadNotificationsController extends ResourceController {
     final getDetailNotificationQuery = Query<Notification>(_context)
       ..where((notification) => notification.id).equalTo(id)
       ..where((notification) => notification.user.id).equalTo(user.id)
-      ..join(object: (notification) => notification.business).join(object: (business) => business.logo)
-      ..sortBy((notification) => notification.date, QuerySortOrder.descending);
+      ..join(object: (notification) => notification.business).join(object: (business) => business.logo);
 
     final notification = await getDetailNotificationQuery.fetchOne();
     return Response.ok(notification);

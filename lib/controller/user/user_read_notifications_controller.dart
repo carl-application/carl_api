@@ -49,7 +49,7 @@ class UserReadNotificationsController extends ResourceController {
     final getDetailNotificationQuery = Query<Notification>(_context)
       ..where((notification) => notification.id).equalTo(id)
       ..where((notification) => notification.user.id).equalTo(user.id)
-      ..join(object: (notification) => notification.business).returningProperties((business) => [business.name])
+      ..join(object: (notification) => notification.business).returningProperties((business) => [business.name, business.logo])
       ..sortBy((notification) => notification.date, QuerySortOrder.descending);
 
     final notification = await getDetailNotificationQuery.fetchOne();

@@ -36,7 +36,9 @@ class BusinessCampaignsController extends ResourceController {
     if (account == null) {
       return Response.unauthorized();
     }
-    final getCampaignsQuery = Query<Campaign>(_context)..where((campaign) => campaign.business.id).equalTo(account.business.id);
+    final getCampaignsQuery = Query<Campaign>(_context)
+      ..where((campaign) => campaign.business.id).equalTo(account.business.id)
+      ..sortBy((campaign) => campaign.date, QuerySortOrder.descending);
     final campaigns = await getCampaignsQuery.fetch();
     return Response.ok(campaigns);
   }

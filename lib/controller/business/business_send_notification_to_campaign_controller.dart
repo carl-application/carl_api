@@ -97,6 +97,10 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
     querySql += ";";
     final tokensAndIdsList = await _context.persistentStore.execute(querySql) as List<List<dynamic>>;
 
+    if (tokensAndIdsList.isEmpty) {
+      return Response.ok(BusinessSendNotificationResponse(success: true, nbMatchedUsers: 0, error: null));
+    }
+
     final List<Future<User>> usersQueries = [];
 
     final getBusinessQuery = Query<Business>(_context)
@@ -155,9 +159,9 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
 
     if (response.statusCode != 200) {
       return Response.serverError(
-          body: BusinessSendNotificationResponse(success: false, error: "Call to firebase failed"));
+          body: BusinessSendNotificationResponse(success: false, nbMatchedUsers: tokensAndIdsList.length, error: "Call to firebase failed"));
     }
 
-    return Response.ok(BusinessSendNotificationResponse(success: true, error: null));
+    return Response.ok(BusinessSendNotificationResponse(success: true, nbMatchedUsers: tokensAndIdsList.length, error: null));
   }
 }

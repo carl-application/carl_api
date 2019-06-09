@@ -1,15 +1,17 @@
 import 'package:carl_api/carl_api.dart';
 
 class BusinessSendNotificationResponse implements Serializable {
-  BusinessSendNotificationResponse({this.success, this.error});
+  BusinessSendNotificationResponse({this.success, this.nbMatchedUsers, this.error});
 
   final bool success;
+  final int nbMatchedUsers;
   final String error;
 
   @override
   Map<String, dynamic> asMap() {
     final map = {
       "success": success,
+      "nbMatchedUsers": nbMatchedUsers,
       "error": error,
     };
 

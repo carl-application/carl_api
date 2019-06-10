@@ -24,6 +24,7 @@ import 'controller/business/business_current_informations_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
 import 'controller/business/business_send_notification_to_campaign_controller.dart';
 import 'controller/image_admin_controller.dart';
+import 'controller/logos_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
@@ -87,6 +88,9 @@ class CarlApiChannel extends ApplicationChannel {
 
     /* Handle Images accessible for anyone */
     router.route("/images/[:id]").link(() =>Authorizer.basic(authServer)).link(() => ImageController(context));
+
+    /* Handle logos accessible for anyone */
+    router.route("/logos").link(() =>Authorizer.basic(authServer)).link(() => LogosController(context));
 
     /* Handle Images accessible for admin */
     router.route("/admin/images/[:id]").link(() =>Authorizer.bearer(authServer)).link(() => ImageAdminController(context));

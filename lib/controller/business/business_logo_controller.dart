@@ -9,13 +9,6 @@ class BusinessLogoController extends ResourceController {
 
   final ManagedContext _context;
 
-  @Operation.get()
-  Future<Response> getAllLogos() async {
-    final getImageQuery = Query<Image>(_context)..where((image) => image.type).equalTo(ImageType.logo);
-
-    return Response.ok(await getImageQuery.fetch());
-  }
-
   @Operation.post()
   Future<Response> postImage(@Bind.body() Image image) async {
     final getBusinessQuery = Query<Account>(_context)

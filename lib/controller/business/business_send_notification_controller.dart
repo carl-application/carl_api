@@ -9,6 +9,8 @@ import 'package:carl_api/model/user.dart';
 import 'package:carl_api/response/business_send_notification_response.dart';
 import 'package:http/http.dart' as http;
 
+import '../../constants.dart';
+
 class BusinessSendNotificationController extends ResourceController {
   BusinessSendNotificationController(this._context, this.firebaseServerKey);
 
@@ -46,7 +48,7 @@ class BusinessSendNotificationController extends ResourceController {
 
     if (notificationsToken == null) {
       return Response.serverError(
-          body: BusinessSendNotificationResponse(success: false, error: "User has not notifications token"));
+          body: BusinessSendNotificationResponse(success: false, error: 3));
     }
 
     final insertNotificationQuery = Query<Notification>(_context)
@@ -71,7 +73,7 @@ class BusinessSendNotificationController extends ResourceController {
 
     if (response.statusCode != 200) {
       return Response.serverError(
-          body: BusinessSendNotificationResponse(success: false, error: "Call to firebase failed"));
+          body: BusinessSendNotificationResponse(success: false, error: Constants.SENDING_NOTIFICATION_FIREBASE_ERROR));
     }
 
     return Response.ok(BusinessSendNotificationResponse(success: true, error: null));

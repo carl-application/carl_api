@@ -20,8 +20,10 @@ import 'controller/business/analytics/business_nb_customers_controller.dart';
 import 'controller/business/analytics/business_nb_visits_for_date_controller.dart';
 import 'controller/business/analytics/business_nb_visits_for_last_twelve_months_controller.dart';
 import 'controller/business/analytics/business_sex_parity_controller.dart';
+import 'controller/business/business_current_informations_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
 import 'controller/business/business_send_notification_to_campaign_controller.dart';
+import 'controller/image_admin_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
@@ -79,16 +81,24 @@ class CarlApiChannel extends ApplicationChannel {
         .link(() => RegisterController(context, authServer));
 
     /* Handle Admin accounts */
-    router.route("/admin/[:userId]").link(() => Authorizer.bearer(authServer)).link(() => AdminController(context));
+    router.route("/admin/[:userId]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => AdminController(context));
 
-    /* Handle Images*/
-    router.route("/images/[:id]").link(() => Authorizer.bearer(authServer)).link(() => ImageController(context));
+    /* Handle Images accessible for anyone */
+    router.route("/images/[:id]").link(() =>Authorizer.basic(authServer)).link(() => ImageController(context));
+
+    /* Handle Images accessible for admin */
+    router.route("/admin/images/[:id]").link(() =>Authorizer.bearer(authServer)).link(() => ImageAdminController(context));
 
     /* Handle visits */
     router.route("/visit").link(() => Authorizer.bearer(authServer)).link(() => UserVisitController(context));
 
     /* Handle Business profile with bearer token */
     router.route("/business/[:id]").link(() => Authorizer.bearer(authServer)).link(() => BusinessController(context));
+
+    /* Handle Current business profile with bearer token */
+    router.route("/business/infos").link(() => Authorizer.bearer(authServer)).link(() => BusinessCurrentInformationsController(context));
 
     /* Handle Business campaigns with bearer token */
     router

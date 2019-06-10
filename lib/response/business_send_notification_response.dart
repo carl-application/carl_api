@@ -5,7 +5,7 @@ class BusinessSendNotificationResponse implements Serializable {
 
   final bool success;
   final int nbMatchedUsers;
-  final String error;
+  final int error;
 
   @override
   Map<String, dynamic> asMap() {

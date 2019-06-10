@@ -20,15 +20,11 @@ class BusinessNbVisitsForDateController extends ResourceController {
       return Response.unauthorized();
     }
 
-    print("Date sent = $dateSent");
     var date = DateTime.tryParse(dateSent);
 
     if (date == null) {
       return Response.notFound();
     }
-
-    print("Date parsed = $date");
-
 
     date = date.toUtc();
 
@@ -45,11 +41,8 @@ class BusinessNbVisitsForDateController extends ResourceController {
     final requestedCount = weekCounts[0];
     final prevDayCount = weekCounts[1];
 
-    print("requestedCount : $requestedCount");
-    print("prevDayCount : $prevDayCount");
-    print("prevDayCount : $prevDayCount");
     final progress = prevDayCount != 0 ? ((requestedCount - prevDayCount) / prevDayCount * 100) : 0.0;
-    print("progress = $progress");
+
     return Response.ok(BusinessCountForDateResponse(
         count: requestedCount,
         weekCounts: weekCounts,
@@ -59,7 +52,6 @@ class BusinessNbVisitsForDateController extends ResourceController {
   }
 
   Future<int> _getVisitsCountForDate(DateTime date, Account account) async {
-
     final morning = date.subtract(Duration(
         hours: date.hour,
         minutes: date.minute,

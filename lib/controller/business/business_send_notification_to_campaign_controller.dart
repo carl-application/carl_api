@@ -11,6 +11,8 @@ import 'package:carl_api/model/user.dart';
 import 'package:carl_api/response/business_send_notification_response.dart';
 import 'package:http/http.dart' as http;
 
+import '../../constants.dart';
+
 class BusinessSendNotificationToCampaignController extends ResourceController {
   BusinessSendNotificationToCampaignController(this._context, this.firebaseServerKey);
 
@@ -100,11 +102,37 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
       return Response.ok(BusinessSendNotificationResponse(success: true, nbMatchedUsers: 0, error: null));
     }
 
-    final List<Future<User>> usersQueries = [];
-
     final getBusinessQuery = Query<Business>(_context)
       ..where((business) => business.id).identifiedBy(account.business.id);
     final business = await getBusinessQuery.fetchOne();
+
+    final now = DateTime.now();
+    final startingMonth = now.subtract(Duration(
+        days: now.day - 1,
+        hours: now.hour,
+        minutes: now.minute,
+        seconds: now.second,
+        milliseconds: now.millisecond,
+        microseconds: now.microsecond));
+
+    final endingMonth = DateTime(now.year, now.month + 1);
+    final getMonthTotalNotificationSentQuery = """
+    SELECT Count(_notification.id)
+    FROM _notification
+    WHERE _notification.date >= '${startingMonth.toIso8601String()}'::date
+    AND _notification.date <= '${endingMonth.toIso8601String()}'::date
+    AND _notification.business_id = ${business.id};
+    """;
+
+    final result = await _context.persistentStore.execute(getMonthTotalNotificationSentQuery);
+    final totalNotificationSent = result[0][0] as int;
+
+    if (totalNotificationSent > 5) {
+      return Response.ok(BusinessSendNotificationResponse(
+          success: false, nbMatchedUsers: 0, error: Constants.SENDING_NOTIFICATION_LIMIT));
+    }
+
+    final List<Future<User>> usersQueries = [];
 
     tokensAndIdsList.forEach((tokenId) {
       final userQuery = Query<User>(_context)..where((user) => user.id).identifiedBy(tokenId[1]);
@@ -146,7 +174,8 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
     });
 
     if (tokens.isEmpty) {
-      return Response.ok(BusinessSendNotificationResponse(success: true, nbMatchedUsers: tokensAndIdsList.length, error: null));
+      return Response.ok(
+          BusinessSendNotificationResponse(success: true, nbMatchedUsers: tokensAndIdsList.length, error: null));
     }
 
     final response = await http.post("https://fcm.googleapis.com/fcm/send",
@@ -161,9 +190,13 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
 
     if (response.statusCode != 200) {
       return Response.serverError(
-          body: BusinessSendNotificationResponse(success: false, nbMatchedUsers: tokensAndIdsList.length, error: "Call to firebase failed"));
+          body: BusinessSendNotificationResponse(
+              success: false,
+              nbMatchedUsers: tokensAndIdsList.length,
+              error: Constants.SENDING_NOTIFICATION_FIREBASE_ERROR));
     }
 
-    return Response.ok(BusinessSendNotificationResponse(success: true, nbMatchedUsers: tokensAndIdsList.length, error: null));
+    return Response.ok(
+        BusinessSendNotificationResponse(success: true, nbMatchedUsers: tokensAndIdsList.length, error: null));
   }
 }

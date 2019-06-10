@@ -39,7 +39,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
       final DateTime d = date.subtract(Duration(days: i));
       correspondingDaysOfWeeks.add(d.weekday);
       final requestedDateVisitsCount = await _getVisitsCountForDate(d, account);
-      weekCounts.add(requestedDateVisitsCount);
+      weekCounts.add(requestedDateVisitsCount[0][0] as int);
     }
 
     final requestedCount = weekCounts[0];
@@ -58,7 +58,8 @@ class BusinessNbVisitsForDateController extends ResourceController {
         hasEvolve: prevDayCount != 0 && prevDayCount != requestedCount));
   }
 
-  Future<int> _getVisitsCountForDate(DateTime date, Account account) async {
+  _getVisitsCountForDate(DateTime date, Account account) async {
+
     final morning = date.subtract(Duration(
         hours: date.hour,
         minutes: date.minute,
@@ -72,6 +73,19 @@ class BusinessNbVisitsForDateController extends ResourceController {
         seconds: date.second,
         milliseconds: date.millisecond,
         microseconds: date.microsecond));
+
+    print("morning : $morning");
+    print("tomorrow : $tomorrow");
+
+    final querySql = """
+    SELECT Count(_visit.id)
+    FROM _visit
+    WHERE _visit.business_id = ${account.business.id}
+    AND _visit.date AT TIME ZONE 'CEST' >= '${morning.toIso8601String()}'::date
+    AND _visit.date AT TIME ZONE 'CEST' <= '${tomorrow.toIso8601String()}'::date
+    """;
+
+    return _context.persistentStore.execute(querySql);
 
     final getVisitsQuery = Query<Visit>(_context)
       ..where((visit) => visit.business.id).identifiedBy(account.business.id)

@@ -127,7 +127,7 @@ class CarlApiChannel extends ApplicationChannel {
 
     /* Handle Businesses Logo image*/
     router
-        .route("/business/logo")
+        .route("/business/logo/[:id]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessLogoController(context));
 

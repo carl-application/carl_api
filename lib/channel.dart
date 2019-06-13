@@ -95,10 +95,10 @@ class CarlApiChannel extends ApplicationChannel {
         .link(() => AdminController(context));
 
     /* Handle Images accessible for anyone */
-    router.route("/images/[:id]").link(() =>Authorizer.basic(authServer)).link(() => ImageController(context));
+    router.route("/images/[:id]").link(() => ImageController(context));
 
     /* Handle logos accessible for anyone */
-    router.route("/logos").link(() =>Authorizer.basic(authServer)).link(() => LogosController(context));
+    router.route("/logos").link(() => LogosController(context));
 
     /* Handle Images accessible for admin */
     router.route("/admin/images/[:id]").link(() =>Authorizer.bearer(authServer)).link(() => ImageAdminController(context));

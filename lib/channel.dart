@@ -23,6 +23,8 @@ import 'controller/business/analytics/business_sex_parity_controller.dart';
 import 'controller/business/business_current_informations_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
 import 'controller/business/business_send_notification_to_campaign_controller.dart';
+import 'controller/business/current_business_controller.dart';
+import 'controller/fake_controller.dart';
 import 'controller/image_admin_controller.dart';
 import 'controller/logos_controller.dart';
 import 'controller/register_controller.dart';
@@ -75,6 +77,12 @@ class CarlApiChannel extends ApplicationChannel {
     /* OAuth 2.0 Endpoints */
     router.route("/auth/token").link(() => AuthController(authServer));
 
+    /* Create and delete fake datas */
+    router
+        .route("/fake")
+        .link(() => Authorizer.basic(authServer))
+        .link(() => FakeController(context));
+
     /* Create an account */
     router
         .route("/register")
@@ -98,8 +106,11 @@ class CarlApiChannel extends ApplicationChannel {
     /* Handle visits */
     router.route("/visit").link(() => Authorizer.bearer(authServer)).link(() => UserVisitController(context));
 
-    /* Handle Business profile with bearer token */
+    /* Handle Other Business profile with bearer token */
     router.route("/business/[:id]").link(() => Authorizer.bearer(authServer)).link(() => BusinessController(context));
+
+    /* Handle Current Business profile with bearer token */
+    router.route("/business/current").link(() => Authorizer.bearer(authServer)).link(() => CurrentBusinessController(context));
 
     /* Handle Current business profile with bearer token */
     router.route("/business/infos").link(() => Authorizer.bearer(authServer)).link(() => BusinessCurrentInformationsController(context));

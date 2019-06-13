@@ -19,7 +19,7 @@ class UserBusinessSearchController extends ResourceController {
       return Response.unauthorized();
     }
 
-    final getBusinessesByNameQuery = Query<Business>(_context)
+      final getBusinessesByNameQuery = Query<Business>(_context)
       ..where((business) => business.name).contains(query, caseSensitive: false)
       ..join(set: (business) => business.tags).returningProperties((tag) => [tag.name])
       ..join(object: (business) => business.logo);

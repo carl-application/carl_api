@@ -127,7 +127,7 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
     final result = await _context.persistentStore.execute(getMonthTotalNotificationSentQuery);
     final totalNotificationSent = result[0][0] as int;
 
-    if (totalNotificationSent > 5) {
+    if (totalNotificationSent > 500) {
       return Response.ok(BusinessSendNotificationResponse(
           success: false, nbMatchedUsers: 0, error: Constants.SENDING_NOTIFICATION_LIMIT));
     }

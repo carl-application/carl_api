@@ -76,6 +76,9 @@ class _Business {
   @Column(nullable: true)
   String cardColor;
 
+  @Column(nullable: false, defaultValue: "1")
+  int nbScanPerDay;
+
   @Relate(#businesses)
   Image image;
 

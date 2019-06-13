@@ -31,6 +31,20 @@ class UserVisitScanController extends ResourceController {
       return Response.notFound();
     }
 
+    final now = DateTime.now().toUtc();
+    final thisMorning = DateTime(now.year, now.month, now.day);
+
+    final getTodayScansQuery = Query<Visit>(_context)
+      ..where((visit) => visit.date).greaterThan(thisMorning)
+      ..where((visit) => visit.user.id).identifiedBy(user.id)
+      ..where((visit) => visit.business.id).identifiedBy(business.id);
+
+    final todayScansCount = await getTodayScansQuery.reduce.count();
+
+    if (todayScansCount >= business.nbScanPerDay) {
+      return Response.forbidden();
+    }
+
     final createVisit = Query<Visit>(_context)
       ..values.business = business
       ..values.user = user

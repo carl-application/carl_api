@@ -110,6 +110,15 @@ class BusinessCurrentInformationsController extends ResourceController {
       ..values.image = image
       ..values.logo = logo;
 
-    return Response.ok(await updateBusinessQuery.updateOne());
+    await updateBusinessQuery.updateOne();
+
+    final finallyUpdatedBusiness = Query<Business>(_context)
+      ..where((business) => business.id).equalTo(ownerAccount.business.id)
+      ..join(object: (business) => business.image)
+      ..join(object: (business) => business.logo)
+      ..join(set: (business) => business.tags).returningProperties((tag) => [tag.name])
+      ..join(object: (business) => business.account).returningProperties((account) => [account.isAdmin]);
+
+    return Response.ok(await finallyUpdatedBusiness.fetchOne());
   }
 }

@@ -12,7 +12,10 @@ class UserVisitScanController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.post("businessKey")
-  Future<Response> validVisitFromNScan(@Bind.path("businessKey") String businessKey) async {
+  Future<Response> validVisitFromNScan(
+    @Bind.query("businessKey") String businessKey,
+    @Bind.query("date") String dateSent
+  ) async {
     final findBusinessQuery = Query<Business>(_context)
       ..where((business) => business.temporaryKey).identifiedBy(businessKey);
 
@@ -31,8 +34,13 @@ class UserVisitScanController extends ResourceController {
       return Response.notFound();
     }
 
-    final now = DateTime.now().toUtc();
-    final thisMorning = DateTime(now.year, now.month, now.day);
+    var date = DateTime.tryParse(dateSent);
+
+    if (date == null) {
+      return Response.notFound();
+    }
+
+    final thisMorning = DateTime(date.year, date.month, date.day);
 
     final getTodayScansQuery = Query<Visit>(_context)
       ..where((visit) => visit.date).greaterThan(thisMorning)
@@ -48,6 +56,7 @@ class UserVisitScanController extends ResourceController {
     final createVisit = Query<Visit>(_context)
       ..values.business = business
       ..values.user = user
+      ..values.date = date
       ..values.type = VisitValidationType.scan;
 
     final visit = await createVisit.insert();

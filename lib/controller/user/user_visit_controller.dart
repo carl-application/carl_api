@@ -12,9 +12,10 @@ class UserVisitController extends ResourceController {
     @Bind.query('businessId') int businessId,
     @Bind.query("lastFetchedDate") String date,
     @Bind.query("fetchLimit") int fetchLimit,
+    @Bind.query("now") String nowDate,
   ) async {
     var lastFectchedDate = DateTime.tryParse(date);
-    lastFectchedDate ??= DateTime.now().toUtc();
+    lastFectchedDate ??= DateTime.tryParse(nowDate);
 
     final getVisitsQuery = Query<Visit>(_context)
       ..where((visit) => visit.business.id).identifiedBy(businessId)

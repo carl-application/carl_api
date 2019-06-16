@@ -11,7 +11,6 @@ class Visit extends ManagedObject<_Visit> implements _Visit {
 
   @override
   void willInsert() {
-    date = DateTime.now().toUtc();
   }
 }
 
@@ -19,7 +18,7 @@ class _Visit {
   @primaryKey
   int id;
 
-  @Column(indexed: true)
+  @Column(indexed: true, nullable: false)
   DateTime date;
 
   @Relate(#visits)

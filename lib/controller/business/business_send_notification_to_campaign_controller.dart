@@ -7,6 +7,7 @@ import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/business.dart';
 import 'package:carl_api/model/campaign.dart';
 import 'package:carl_api/model/notification.dart';
+import 'package:carl_api/model/setting.dart';
 import 'package:carl_api/model/user.dart';
 import 'package:carl_api/response/business_send_notification_response.dart';
 import 'package:http/http.dart' as http;
@@ -127,7 +128,10 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
     final result = await _context.persistentStore.execute(getMonthTotalNotificationSentQuery);
     final totalNotificationSent = result[0][0] as int;
 
-    if (totalNotificationSent > 500 && !account.isAdmin && business.planType != PlanType.premium) {
+    final settings = await Query<Settings>(_context).fetchOne();
+    if (totalNotificationSent > settings.nbFreeNotificationsPerMonth &&
+        !account.isAdmin &&
+        business.planType != PlanType.premium) {
       return Response.ok(BusinessSendNotificationResponse(
           success: false, nbMatchedUsers: 0, error: Constants.SENDING_NOTIFICATION_LIMIT));
     }

@@ -1,4 +1,4 @@
-import 'package:carl_api/controller/AdminMiddlewareController.dart';
+import 'package:carl_api/controller/admin_middleware_controller.dart';
 import 'package:carl_api/controller/admin_controller.dart';
 import 'package:carl_api/controller/business/business_campaigns_controller.dart';
 import 'package:carl_api/controller/business/business_card_color_controller.dart';
@@ -101,7 +101,6 @@ class CarlApiChannel extends ApplicationChannel {
     router
         .route("/admin/settings")
         .link(() => Authorizer.bearer(authServer))
-        .link(() => AdminMiddlewareController(context))
         .link(() => SettingsController(context));
 
     /* Handle Images accessible for admin */

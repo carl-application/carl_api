@@ -1,5 +1,6 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/setting.dart';
 
 class SettingsController extends ResourceController {
@@ -15,6 +16,16 @@ class SettingsController extends ResourceController {
 
   @Operation.post()
   Future<Response> postSettings(@Bind.body() Settings settings) async {
+    final Query<Account> adminAccountQuery = Query<Account>(_context)
+      ..where((account) => account.id).identifiedBy(request.authorization.ownerID)
+      ..where((account) => account.isAdmin).equalTo(true);
+
+    final account = await adminAccountQuery.fetchOne();
+
+    if (account == null) {
+      return Response.unauthorized();
+    }
+
     final insertSettingsQuery = Query<Settings>(_context)..values = settings;
 
     return Response.ok(await insertSettingsQuery.insert());
@@ -22,6 +33,16 @@ class SettingsController extends ResourceController {
 
   @Operation.put()
   Future<Response> updateSettings(@Bind.body() Settings settings) async {
+    final Query<Account> adminAccountQuery = Query<Account>(_context)
+      ..where((account) => account.id).identifiedBy(request.authorization.ownerID)
+      ..where((account) => account.isAdmin).equalTo(true);
+
+    final account = await adminAccountQuery.fetchOne();
+
+    if (account == null) {
+      return Response.unauthorized();
+    }
+
     final oldSettings = await Query<Settings>(_context).fetchOne();
     final updateSettingsQuery = Query<Settings>(_context)
       ..values = settings

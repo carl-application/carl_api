@@ -1,3 +1,4 @@
+import 'package:carl_api/controller/AdminMiddlewareController.dart';
 import 'package:carl_api/controller/admin_controller.dart';
 import 'package:carl_api/controller/business/business_campaigns_controller.dart';
 import 'package:carl_api/controller/business/business_card_color_controller.dart';
@@ -15,6 +16,7 @@ import 'package:carl_api/controller/user/user_visit_scan_controller.dart';
 import 'package:carl_api/model/account.dart';
 
 import 'carl_api.dart';
+import 'controller/SettingsController.dart';
 import 'controller/business/analytics/business_age_repartition_controller.dart';
 import 'controller/business/analytics/business_nb_customers_controller.dart';
 import 'controller/business/analytics/business_nb_visits_for_date_controller.dart';
@@ -78,10 +80,7 @@ class CarlApiChannel extends ApplicationChannel {
     router.route("/auth/token").link(() => AuthController(authServer));
 
     /* Create and delete fake datas */
-    router
-        .route("/fake")
-        .link(() => Authorizer.basic(authServer))
-        .link(() => FakeController(context));
+    router.route("/fake").link(() => Authorizer.basic(authServer)).link(() => FakeController(context));
 
     /* Create an account */
     router
@@ -90,9 +89,7 @@ class CarlApiChannel extends ApplicationChannel {
         .link(() => RegisterController(context, authServer));
 
     /* Handle Admin accounts */
-    router.route("/admin/[:userId]")
-        .link(() => Authorizer.bearer(authServer))
-        .link(() => AdminController(context));
+    router.route("/admin/[:userId]").link(() => Authorizer.bearer(authServer)).link(() => AdminController(context));
 
     /* Handle Images accessible for anyone */
     router.route("/images/[:id]").link(() => ImageController(context));
@@ -100,8 +97,19 @@ class CarlApiChannel extends ApplicationChannel {
     /* Handle logos accessible for anyone */
     router.route("/logos").link(() => LogosController(context));
 
+    /* Handle Settings for admin */
+    router
+        .route("/admin/settings")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => AdminMiddlewareController(context))
+        .link(() => SettingsController(context));
+
     /* Handle Images accessible for admin */
-    router.route("/admin/images/[:id]").link(() =>Authorizer.bearer(authServer)).link(() => ImageAdminController(context));
+    router
+        .route("/admin/images/[:id]")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => AdminMiddlewareController(context))
+        .link(() => ImageAdminController(context));
 
     /* Handle visits */
     router.route("/visit").link(() => Authorizer.bearer(authServer)).link(() => UserVisitController(context));
@@ -110,10 +118,16 @@ class CarlApiChannel extends ApplicationChannel {
     router.route("/business/[:id]").link(() => Authorizer.bearer(authServer)).link(() => BusinessController(context));
 
     /* Handle Current Business profile with bearer token */
-    router.route("/business/current").link(() => Authorizer.bearer(authServer)).link(() => CurrentBusinessController(context));
+    router
+        .route("/business/current")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => CurrentBusinessController(context));
 
     /* Handle Current business profile with bearer token */
-    router.route("/business/infos").link(() => Authorizer.bearer(authServer)).link(() => BusinessCurrentInformationsController(context));
+    router
+        .route("/business/infos")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessCurrentInformationsController(context));
 
     /* Handle Business campaigns with bearer token */
     router

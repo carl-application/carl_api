@@ -54,7 +54,11 @@ class CarlApiChannel extends ApplicationChannel {
   /// This method is invoked prior to [entryPoint] being accessed.
   @override
   Future prepare() async {
-    CORSPolicy.defaultPolicy.allowedOrigins = ["http://localhost:8080", "http://www.carl-fidelity.com"];
+    CORSPolicy.defaultPolicy.allowedOrigins = [
+      "http://localhost:8080",
+      "http://www.carl-fidelity.com",
+      "https://www.carl-fidelity.com"
+    ];
     logger.onRecord.listen((rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
 
     final config = CarlApiConfiguration(options.configurationFilePath);

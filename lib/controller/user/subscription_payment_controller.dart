@@ -18,7 +18,7 @@ class SubscriptionPaymentController extends ResourceController {
     final createUserResponse = await http.post("https://api.stripe.com/v1/customers",
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $stripeKey",
-          HttpHeaders.contentTypeHeader: "application/json"
+          HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
         },
         body: json.encode({
           "source": cardToken,
@@ -37,7 +37,7 @@ class SubscriptionPaymentController extends ResourceController {
     final createSubscriptionResponse = await http.post("https://api.stripe.com/v1/subscriptions",
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $stripeKey",
-          HttpHeaders.contentTypeHeader: "application/json"
+          HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
         },
         body: json.encode({
           "customer": result.id,

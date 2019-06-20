@@ -15,14 +15,13 @@ class SubscriptionPaymentController extends ResourceController {
 
   @Operation.post()
   Future<Response> pay(@Bind.query("cardToken") String cardToken) async {
+    final userCreationData = {'source': cardToken};
     final createUserResponse = await http.post("https://api.stripe.com/v1/customers",
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $stripeKey",
           HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
         },
-        body: json.encode({
-          "source": cardToken,
-        }));
+        body: userCreationData);
 
     print("createUserResponse : $createUserResponse");
 
@@ -34,16 +33,17 @@ class SubscriptionPaymentController extends ResourceController {
         StripeCreateUserResponse.fromJson(json.decode(createUserResponse.body) as Map<String, dynamic>);
     print("result.id = ${result.id}");
 
+    final subscriptionData = {
+      "customer": result.id,
+      "items[0][plan]": "plan_CBXbz9i7AIOTzr",
+      "expand[]": "latest_invoice.payment_intent"
+    };
     final createSubscriptionResponse = await http.post("https://api.stripe.com/v1/subscriptions",
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $stripeKey",
           HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
         },
-        body: json.encode({
-          "customer": result.id,
-          "items[0][plan]": "plan_CBXbz9i7AIOTzr",
-          "expand[]": "latest_invoice.payment_intent"
-        }));
+        body: subscriptionData);
 
     if (createSubscriptionResponse.statusCode != 200) {
       return Response.serverError(body: "create subscription failed = ${createSubscriptionResponse.body}");

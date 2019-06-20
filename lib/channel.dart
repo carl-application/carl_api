@@ -7,6 +7,7 @@ import 'package:carl_api/controller/business/business_controller.dart';
 import 'package:carl_api/controller/business/business_logo_controller.dart';
 import 'package:carl_api/controller/business/business_tags_controller.dart';
 import 'package:carl_api/controller/image_controller.dart';
+import 'package:carl_api/controller/user/subscription_payment_controller.dart';
 import 'package:carl_api/controller/user/user_cards_controller.dart';
 import 'package:carl_api/controller/user/user_notifications_blacklist_controller.dart';
 import 'package:carl_api/controller/user/user_visit_controller.dart';
@@ -45,6 +46,7 @@ class CarlApiChannel extends ApplicationChannel {
   AuthServer authServer;
   ManagedContext context;
   String firebaseServerKey;
+  String stripeKey;
 
   /// Initialize services in this method.
   ///
@@ -64,6 +66,7 @@ class CarlApiChannel extends ApplicationChannel {
     final config = CarlApiConfiguration(options.configurationFilePath);
 
     firebaseServerKey = config.firebaseServerKey;
+    stripeKey = config.stripeKey;
     context = contextWithConnectionInfo(config.database);
 
     final authStorage = ManagedAuthDelegate<Account>(context);
@@ -262,6 +265,12 @@ class CarlApiChannel extends ApplicationChannel {
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserNotificationsBlackListController(context));
 
+    /* Handle user subscription payment */
+    router
+        .route("/user/subscribe")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => SubscriptionPaymentController(context, stripeKey));
+
     return router;
   }
 
@@ -289,4 +298,5 @@ class CarlApiConfiguration extends Configuration {
 
   DatabaseConfiguration database;
   String firebaseServerKey;
+  String stripeKey;
 }

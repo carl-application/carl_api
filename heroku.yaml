@@ -1,2 +1,3 @@
 database: $DATABASE_URL
 firebaseServerKey: $FIREBASE_SERVER_KEY
+stripeKey: $STRIPE_KEY

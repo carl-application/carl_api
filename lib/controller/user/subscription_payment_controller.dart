@@ -49,6 +49,7 @@ class SubscriptionPaymentController extends ResourceController {
       return Response.serverError(body: "create subscription failed = ${createSubscriptionResponse.body}");
     }
 
+    print("createSubscriptionResponse.body = ${createSubscriptionResponse.body}");
     final StripeCreateSubscriptionResponse subscriptionResult =
         StripeCreateSubscriptionResponse.fromJson(json.decode(createSubscriptionResponse.body) as Map<String, dynamic>);
 

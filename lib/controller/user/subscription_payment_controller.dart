@@ -35,7 +35,7 @@ class SubscriptionPaymentController extends ResourceController {
 
     final subscriptionData = {
       "customer": result.id,
-      "items[0][plan]": "prod_FIAO1kNo48YMw2",
+      "items[0][plan]": "plan_FIBEraalbRxRYm",
       "expand[]": "latest_invoice.payment_intent"
     };
     final createSubscriptionResponse = await http.post("https://api.stripe.com/v1/subscriptions",

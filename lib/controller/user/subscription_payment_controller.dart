@@ -33,15 +33,17 @@ class SubscriptionPaymentController extends ResourceController {
         StripeCreateUserResponse.fromJson(json.decode(createUserResponse.body) as Map<String, dynamic>);
     print("result.id = ${result.id}");
 
-    final uri = 'https://api.stripe.com/v1/subscriptions?customer=${result.id}&items[0][plan]=plan_FIBEraalbRxRYm&expand[]=latest_invoice.payment_intent';
-    final encoded = Uri.encodeFull(uri);
-
+    final params = {
+      "customer": result.id,
+      "items[0][plan]": "plan_FIBEraalbRxRYm",
+      "expand[]": "latest_invoice.payment_intent"
+    };
     final createSubscriptionResponse = await http.post("https://api.stripe.com/v1/subscriptions",
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $stripeKey",
           HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
         },
-        body: encoded);
+        body: params);
 
     if (createSubscriptionResponse.statusCode != 200) {
       return Response.serverError(body: "create subscription failed = ${createSubscriptionResponse.body}");

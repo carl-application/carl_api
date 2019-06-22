@@ -35,9 +35,7 @@ class CurrentBusinessController extends ResourceController {
   }
 
   @Operation.put()
-  Future<Response> updatePassword(
-    @Bind.query("newPassword") String newPassword,
-  ) async {
+  Future<Response> updatePassword(@Bind.query("newPassword") String newPassword) async {
     final accountQuery = Query<Account>(_context)
       ..where((account) => account.id).identifiedBy(request.authorization.ownerID)
       ..where((account) => account.business).isNotNull();

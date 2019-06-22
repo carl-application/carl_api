@@ -1,3 +1,5 @@
 database: $DATABASE_URL
 firebaseServerKey: $FIREBASE_SERVER_KEY
 stripeKey: $STRIPE_KEY
+mailJetKey: $MAIL_KEY
+mailJetSecret: $MAIL_SECRET

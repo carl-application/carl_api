@@ -40,6 +40,10 @@ class _Business {
   @Validate(onInsert: false, onUpdate: false)
   String temporaryKey;
 
+  @Column(nullable: true)
+  @Validate(onInsert: false, onUpdate: false)
+  String affiliationKey;
+
   @Column(nullable: false)
   String name;
 

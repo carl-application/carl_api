@@ -1,5 +1,5 @@
-import 'package:carl_api/controller/admin_middleware_controller.dart';
 import 'package:carl_api/controller/admin_controller.dart';
+import 'package:carl_api/controller/admin_middleware_controller.dart';
 import 'package:carl_api/controller/business/business_campaigns_controller.dart';
 import 'package:carl_api/controller/business/business_card_color_controller.dart';
 import 'package:carl_api/controller/business/business_card_image_controller.dart';
@@ -7,7 +7,6 @@ import 'package:carl_api/controller/business/business_controller.dart';
 import 'package:carl_api/controller/business/business_logo_controller.dart';
 import 'package:carl_api/controller/business/business_tags_controller.dart';
 import 'package:carl_api/controller/image_controller.dart';
-import 'package:carl_api/controller/user/subscription_payment_controller.dart';
 import 'package:carl_api/controller/user/user_cards_controller.dart';
 import 'package:carl_api/controller/user/user_notifications_blacklist_controller.dart';
 import 'package:carl_api/controller/user/user_visit_controller.dart';
@@ -17,7 +16,7 @@ import 'package:carl_api/controller/user/user_visit_scan_controller.dart';
 import 'package:carl_api/model/account.dart';
 
 import 'carl_api.dart';
-import 'controller/settings_controller.dart';
+import 'controller/business/affiliation/send_affiliation.dart';
 import 'controller/business/analytics/business_age_repartition_controller.dart';
 import 'controller/business/analytics/business_nb_customers_controller.dart';
 import 'controller/business/analytics/business_nb_visits_for_date_controller.dart';
@@ -31,6 +30,7 @@ import 'controller/fake_controller.dart';
 import 'controller/image_admin_controller.dart';
 import 'controller/logos_controller.dart';
 import 'controller/register_controller.dart';
+import 'controller/settings_controller.dart';
 import 'controller/user/user_controller.dart';
 import 'controller/user/user_notification_token_controller.dart';
 import 'controller/user/user_read_notifications_controller.dart';
@@ -47,6 +47,8 @@ class CarlApiChannel extends ApplicationChannel {
   ManagedContext context;
   String firebaseServerKey;
   String stripeKey;
+  String mailJetKey;
+  String mailJetSecret;
 
   /// Initialize services in this method.
   ///
@@ -67,6 +69,8 @@ class CarlApiChannel extends ApplicationChannel {
 
     firebaseServerKey = config.firebaseServerKey;
     stripeKey = config.stripeKey;
+    mailJetKey = config.mailJetKey;
+    mailJetSecret = config.mailJetSecret;
     context = contextWithConnectionInfo(config.database);
 
     final authStorage = ManagedAuthDelegate<Account>(context);
@@ -105,10 +109,7 @@ class CarlApiChannel extends ApplicationChannel {
     router.route("/logos").link(() => LogosController(context));
 
     /* Handle Settings for admin */
-    router
-        .route("/admin/settings")
-        .link(() => Authorizer.bearer(authServer))
-        .link(() => SettingsController(context));
+    router.route("/admin/settings").link(() => Authorizer.bearer(authServer)).link(() => SettingsController(context));
 
     /* Handle Images accessible for admin */
     router
@@ -204,6 +205,12 @@ class CarlApiChannel extends ApplicationChannel {
         .route("/business/analytics/customer/sex/count/[:sex]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessSexParityController(context));
+
+    /* Handle sending an affiliation link */
+    router
+        .route("/business/affiliation/send")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => SendAffiliationController(context, mailJetKey, mailJetSecret));
 
     /* Handle User profile with bearer token */
     router
@@ -301,4 +308,6 @@ class CarlApiConfiguration extends Configuration {
   DatabaseConfiguration database;
   String firebaseServerKey;
   String stripeKey;
+  String mailJetKey;
+  String mailJetSecret;
 }

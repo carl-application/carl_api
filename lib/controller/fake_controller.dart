@@ -1,10 +1,6 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
-import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/business.dart';
-import 'package:carl_api/model/image.dart';
-import 'package:carl_api/model/user.dart';
-import 'package:carl_api/model/visit.dart';
 
 class FakeController extends ResourceController {
   FakeController(this._context);
@@ -13,10 +9,9 @@ class FakeController extends ResourceController {
 
   @Operation.get()
   Future<Response> fake() async {
-
-    final query = Query<Account>(_context)
-        ..where((account)=> account.business).identifiedBy(11)
-        ..values.isAdmin = true;
+    final query = Query<Business>(_context)
+      ..where((business) => business.id).identifiedBy(13)
+      ..values.planType = PlanType.premium;
 
     return Response.ok(await query.updateOne());
   }

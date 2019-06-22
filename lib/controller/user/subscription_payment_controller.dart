@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/model/account.dart';
+import 'package:carl_api/response/business_pay_premium_response.dart';
+import 'package:carl_api/response/stripe_create_subscription_error.dart';
 import 'package:carl_api/response/stripe_create_subscription_response.dart';
 import 'package:carl_api/response/stripe_create_user_response.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +18,17 @@ class SubscriptionPaymentController extends ResourceController {
 
   @Operation.post()
   Future<Response> pay(@Bind.query("cardToken") String cardToken) async {
-    final userCreationData = {'source': cardToken};
+    final accountQuery = Query<Account>(_context)
+      ..where((account) => account.id).identifiedBy(request.authorization.ownerID)
+      ..where((account) => account.business).isNotNull();
+
+    final ownerAccount = await accountQuery.fetchOne();
+
+    if (ownerAccount == null) {
+      return Response.unauthorized();
+    }
+
+    final userCreationData = {'source': cardToken, 'email': ownerAccount.username};
     final createUserResponse = await http.post("https://api.stripe.com/v1/customers",
         headers: {
           HttpHeaders.authorizationHeader: "Bearer $stripeKey",
@@ -23,10 +36,11 @@ class SubscriptionPaymentController extends ResourceController {
         },
         body: userCreationData);
 
-    print("createUserResponse : $createUserResponse");
-
     if (createUserResponse.statusCode != 200) {
-      return Response.serverError(body: "create user failed = ${createUserResponse.body}");
+      final error =
+          StripeCreateSubscriptionError.fromJson(json.decode(createUserResponse.body) as Map<String, dynamic>);
+      return Response.ok(
+          BusinessPayPremiumResponse(stripeCreateSubscriptionError: error, stripeCreateSubscriptionResponse: null));
     }
 
     final StripeCreateUserResponse result =
@@ -35,7 +49,7 @@ class SubscriptionPaymentController extends ResourceController {
 
     final params = {
       "customer": result.id,
-      "items[0][plan]": "plan_FIBEraalbRxRYm",
+      "items[0][plan]": "plan_FIhkFmymwBzWaY",
       "expand[]": "latest_invoice.payment_intent"
     };
     final createSubscriptionResponse = await http.post("https://api.stripe.com/v1/subscriptions",
@@ -46,13 +60,16 @@ class SubscriptionPaymentController extends ResourceController {
         body: params);
 
     if (createSubscriptionResponse.statusCode != 200) {
-      return Response.serverError(body: "create subscription failed = ${createSubscriptionResponse.body}");
+      final error =
+          StripeCreateSubscriptionError.fromJson(json.decode(createSubscriptionResponse.body) as Map<String, dynamic>);
+      return Response.ok(
+          BusinessPayPremiumResponse(stripeCreateSubscriptionError: error, stripeCreateSubscriptionResponse: null));
     }
 
-    print("createSubscriptionResponse.body = ${createSubscriptionResponse.body}");
     final StripeCreateSubscriptionResponse subscriptionResult =
         StripeCreateSubscriptionResponse.fromJson(json.decode(createSubscriptionResponse.body) as Map<String, dynamic>);
 
-    return Response.ok(subscriptionResult.paymentIntent.status);
+    return Response.ok(BusinessPayPremiumResponse(
+        stripeCreateSubscriptionError: null, stripeCreateSubscriptionResponse: subscriptionResult));
   }
 }

@@ -19,6 +19,7 @@ class SendAffiliationController extends ResourceController {
     final accountQuery = Query<Account>(_context)
       ..where((account) => account.id).identifiedBy(request.authorization.ownerID)
       ..where((account) => account.business).isNotNull()
+      ..where((account) => account.business.planType).equalTo(PlanType.premium)
       ..join(object: (account) => account.business);
 
     final ownerAccount = await accountQuery.fetchOne();
@@ -38,9 +39,8 @@ class SendAffiliationController extends ResourceController {
     }
 
     await sendEmail(recipient, affiliationKey, ownerAccount.business.name);
-    await sendEmail(recipient, affiliationKey, ownerAccount.business.name);
 
-    return Response.ok("sent");
+    return Response.ok("");
   }
 
   Future<void> sendEmail(String recipient, String affiliationKey, String businessName) async {
@@ -57,18 +57,14 @@ class SendAffiliationController extends ResourceController {
                   "Email": recipient,
                 }
               ],
-              "Subject": "Vous avez reçu une clé d'affiliation !",
-              "TemplateID": 885612,
+              "TemplateID": 885688,
               "TemplateLanguage": true,
-              "Variables": {
-                "businessName": businessName,
-                "affiliationKey": affiliationKey
-              }
+              "Subject": "Vous avez reçu une clé d'affiliation !",
+              "Variables": {"business": "$businessName", "key": "$affiliationKey", "cleaning": "", "enrolled": ""}
             }
           ]
         }));
 
-    print("sending email response = ${response.statusCode}");
     return null;
   }
 

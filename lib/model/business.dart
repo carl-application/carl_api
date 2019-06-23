@@ -17,6 +17,7 @@ class Business extends ManagedObject<_Business> implements _Business {
   void willInsert() {
     nfcKey = Uuid().v4();
     temporaryKey = Uuid().v4();
+    affiliationKey = Uuid().v4();
   }
 }
 

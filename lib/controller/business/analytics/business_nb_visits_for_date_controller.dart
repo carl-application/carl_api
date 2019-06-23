@@ -23,11 +23,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
 
     var date = params.dateSent;
 
-    if (date == null) {
-      return Response.notFound();
-    }
-
-    date = date.toUtc();
+    date ??= date.toUtc();
 
     final List<int> weekCounts = [];
     final List<int> correspondingDaysOfWeeks = [];

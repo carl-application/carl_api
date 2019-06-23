@@ -1,7 +1,9 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/controller/utils.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/customer_relationship.dart';
+import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_count_for_date_response.dart';
 
 class BusinessNbCustomersController extends ResourceController {
@@ -10,7 +12,7 @@ class BusinessNbCustomersController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.get()
-  Future<Response> getNbCustomers(@Bind.query("date") String dateSent) async {
+  Future<Response> getNbCustomers(@Bind.body() BusinessAnalyticsParams params) async {
     final getBusinessQuery = Query<Account>(_context)
       ..where((account) => account.id).equalTo(request.authorization.ownerID)
       ..where((account) => account.business).isNotNull();
@@ -20,8 +22,7 @@ class BusinessNbCustomersController extends ResourceController {
       return Response.unauthorized();
     }
 
-    print("Date sent = $dateSent");
-    var date = DateTime.tryParse(dateSent);
+    var date = params.dateSent;
 
     if (date == null) {
       return Response.notFound();
@@ -33,7 +34,7 @@ class BusinessNbCustomersController extends ResourceController {
     for (var i = 0; i < 7; i++) {
       final DateTime d = date.subtract(Duration(days: i));
       correspondingDaysOfWeeks.add(d.weekday);
-      final requestedDateCustomersCount = await _getCustomersCountForDate(d, account);
+      final requestedDateCustomersCount = await _getCustomersCountForDate(d, account, params);
       weekCounts.add(requestedDateCustomersCount);
     }
 
@@ -50,7 +51,7 @@ class BusinessNbCustomersController extends ResourceController {
         hasEvolve: prevDayCount != 0 && prevDayCount != requestedCount));
   }
 
-  Future<int> _getCustomersCountForDate(DateTime date, Account account) async {
+  Future<int> _getCustomersCountForDate(DateTime date, Account account, BusinessAnalyticsParams params) async {
     final tomorrowMorning = date.subtract(Duration(
         days: -1,
         hours: date.hour,
@@ -59,10 +60,16 @@ class BusinessNbCustomersController extends ResourceController {
         milliseconds: date.millisecond,
         microseconds: date.microsecond));
 
-    final query = Query<CustomerRelationship>(_context)
-      ..where((relationship) => relationship.business.id).equalTo(account.business.id)
-      ..where((relationship) => relationship.date).lessThan(tomorrowMorning);
+    final querySql = """
+      SELECT Count(_customerrelationship.id)
+      FROM _customerrelationship
+      WHERE _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, account.business.id)}
+      AND _customerrelationship.date <= '${tomorrowMorning.toIso8601String()}'::date;
+      """;
 
-    return query.reduce.count();
+    final result = await _context.persistentStore.execute(querySql);
+    final total = result[0][0] as int;
+
+    return total;
   }
 }

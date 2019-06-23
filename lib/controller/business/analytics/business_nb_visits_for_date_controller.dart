@@ -1,6 +1,7 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
 import 'package:carl_api/model/account.dart';
+import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_count_for_date_response.dart';
 
 class BusinessNbVisitsForDateController extends ResourceController {
@@ -9,7 +10,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.get()
-  Future<Response> getVisitsForDate(@Bind.query("date") String dateSent) async {
+  Future<Response> getVisitsForDate(@Bind.body() BusinessAnalyticsParams params) async {
     final getBusinessQuery = Query<Account>(_context)
       ..where((account) => account.id).equalTo(request.authorization.ownerID)
       ..where((account) => account.business).isNotNull();
@@ -19,7 +20,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
       return Response.unauthorized();
     }
 
-    var date = DateTime.tryParse(dateSent);
+    var date = params.dateSent;
 
     if (date == null) {
       return Response.notFound();
@@ -33,7 +34,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
     for (var i = 0; i < 7; i++) {
       final DateTime d = date.subtract(Duration(days: i));
       correspondingDaysOfWeeks.add(d.weekday);
-      final requestedDateVisitsCount = await _getVisitsCountForDate(d, account);
+      final requestedDateVisitsCount = await _getVisitsCountForDate(d, account, params);
       weekCounts.add(requestedDateVisitsCount);
     }
 
@@ -50,7 +51,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
         hasEvolve: prevDayCount != 0 && prevDayCount != requestedCount));
   }
 
-  Future<int> _getVisitsCountForDate(DateTime date, Account account) async {
+  Future<int> _getVisitsCountForDate(DateTime date, Account account, BusinessAnalyticsParams params) async {
     final morning = date.subtract(Duration(
         hours: date.hour,
         minutes: date.minute,
@@ -65,12 +66,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
         milliseconds: date.millisecond,
         microseconds: date.microsecond));
 
-    /* final getVisitsQuery = Query<Visit>(_context)
-      ..where((visit) => visit.business.id).identifiedBy(account.business.id)
-      ..where((visit) => visit.date).lessThan(tomorrow)
-      ..where((visit) => visit.date).greaterThan(morning); */
-
-    final businessIds = """
+    var businessIds = """
       (
       SELECT _business.id
       FROM _business
@@ -78,6 +74,26 @@ class BusinessNbVisitsForDateController extends ResourceController {
       OR _business.id = ${account.business.id}
       )
     """;
+
+    if (params.subEntities.isNotEmpty) {
+      var ids = "(${account.business.id},";
+      params.subEntities.asMap().forEach((index, value) {
+          ids += "$value";
+          if (index < params.subEntities.length -1) {
+            ids += ",";
+          }
+      });
+      ids += ")";
+      businessIds = """
+      (
+      SELECT _business.id
+      FROM _business
+      WHERE _business.id IN $ids
+      AND _business.parent_id = ${account.business.id}
+      OR _business.id = ${account.business.id}
+      )
+      """;
+    }
 
     final querySql = """
       SELECT Count(_visit.id)

@@ -10,7 +10,7 @@ class BusinessAgeRepartitionController extends ResourceController {
 
   final ManagedContext _context;
 
-  @Operation.get()
+  @Operation.post()
   Future<Response> getAgeRepartition(@Bind.body() BusinessAnalyticsParams params) async {
     final getBusinessQuery = Query<Account>(_context)
       ..where((account) => account.id).equalTo(request.authorization.ownerID)

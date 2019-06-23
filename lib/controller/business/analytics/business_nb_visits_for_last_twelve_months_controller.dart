@@ -2,7 +2,6 @@ import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
 import 'package:carl_api/controller/utils.dart';
 import 'package:carl_api/model/account.dart';
-import 'package:carl_api/model/visit.dart';
 import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_count_for_last_months_response.dart';
 
@@ -11,7 +10,7 @@ class BusinessNbVisitsForLastTwelveMonthsController extends ResourceController {
 
   final ManagedContext _context;
 
-  @Operation.get()
+  @Operation.post()
   Future<Response> getVisitsCount(@Bind.body() BusinessAnalyticsParams params) async {
     final getBusinessQuery = Query<Account>(_context)
       ..where((account) => account.id).equalTo(request.authorization.ownerID)

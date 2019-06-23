@@ -10,10 +10,14 @@ class FakeController extends ResourceController {
 
   @Operation.get()
   Future<Response> fake() async {
-    final a = Query<Business>(_context)
-      ..values.affiliationKey = Uuid().v4()
-      ..where((business) => business.affiliationKey).isNull();
+    final allBusinesses = await Query<Business>(_context).fetch();
 
-    return Response.ok(await a.update());
+    allBusinesses.forEach((b) async {
+      final updateQuery = Query<Business>(_context)
+        ..values.affiliationKey = Uuid().v4()
+        ..where((business) => business.id).equalTo(b.id);
+      await updateQuery.updateOne();
+    });
+    return Response.ok(await Query<Business>(_context).fetch());
   }
 }

@@ -11,7 +11,12 @@ class AdminGetBusinessesController extends ResourceController {
   @Operation.get()
   Future<Response> getBusinesses() async {
     final getBusinessesQuery = Query<Business>(_context)
-      ..returningProperties((business) => [business.name, business.planType]);
+      ..returningProperties((business) => [
+        business.name,
+        business.planType,
+        business.affiliationKey,
+        business.temporaryKey
+      ]);
 
     return Response.ok(await getBusinessesQuery.fetch());
   }

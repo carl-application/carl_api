@@ -9,11 +9,11 @@ class FakeController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.get()
-  Future<Response> fake() async {
+  Future<Response> fake(@Bind.query("id") int id) async {
     final query = Query<Business>(_context)
-      ..where((business) => business.affiliationKey).isNull()
-      ..values.affiliationKey = Uuid().v4();
+      ..where((business) => business.id).identifiedBy(id)
+      ..values.planType = PlanType.premium;
 
-    return Response.ok(await query.update());
+    return Response.ok(await query.updateOne());
   }
 }

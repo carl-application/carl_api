@@ -1,6 +1,8 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/controller/utils.dart';
 import 'package:carl_api/model/account.dart';
+import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_customers_by_sex_count_response.dart';
 
 class BusinessSexParityController extends ResourceController {
@@ -9,7 +11,7 @@ class BusinessSexParityController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.get()
-  Future<Response> getSexParity() async {
+  Future<Response> getSexParity(@Bind.body() BusinessAnalyticsParams params) async {
     final getBusinessQuery = Query<Account>(_context)
       ..where((account) => account.id).equalTo(request.authorization.ownerID)
       ..where((account) => account.business).isNotNull();
@@ -19,9 +21,9 @@ class BusinessSexParityController extends ResourceController {
       return Response.unauthorized();
     }
 
-    final queryWomen = _getQueryFor("woman", account.business.id);
-    final queryMen = _getQueryFor("man", account.business.id);
-    final queryNp = _getQueryFor("np", account.business.id);
+    final queryWomen = _getQueryFor("woman", account.business.id, params);
+    final queryMen = _getQueryFor("man", account.business.id, params);
+    final queryNp = _getQueryFor("np", account.business.id, params);
 
     final getWomenCount = await _context.persistentStore.execute(queryWomen);
     final getMenCount = await _context.persistentStore.execute(queryMen);
@@ -32,14 +34,14 @@ class BusinessSexParityController extends ResourceController {
     return Response.ok(response);
   }
 
-  String _getQueryFor(String sex, int businessId) {
+  String _getQueryFor(String sex, int businessId, BusinessAnalyticsParams params) {
     return """
     SELECT Count(_user.id)
     FROM _customerrelationship
     INNER JOIN _user
     ON _customerrelationship.user_id = _user.id
     AND _user.sex = '$sex'
-    AND _customerrelationship.business_id = ${businessId};
+    AND _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, businessId)};
     """;
   }
 }

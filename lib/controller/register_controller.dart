@@ -34,11 +34,14 @@ class RegisterController extends ResourceController {
         ..values = account
         ..values.user = user;
     } else {
+      print("account.business.affiliationKey = ${account.business.affiliationKey}");
       if (account.business.affiliationKey != null) {
         final getParentQuery = Query<Business>(_context)
           ..where((business) => business.affiliationKey).identifiedBy(account.business.affiliationKey);
 
         final parentBusiness = await getParentQuery.fetchOne();
+        print("Found parent business = ${parentBusiness.name}");
+
         account.business.parent = parentBusiness;
       }
       final insertBusinessQuery = Query<Business>(_context)..values = account.business;

@@ -1,5 +1,6 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/controller/utils.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_count_for_date_response.dart';
@@ -66,39 +67,10 @@ class BusinessNbVisitsForDateController extends ResourceController {
         milliseconds: date.millisecond,
         microseconds: date.microsecond));
 
-    var businessIds = """
-      (
-      SELECT _business.id
-      FROM _business
-      WHERE _business.parent_id = ${account.business.id}
-      OR _business.id = ${account.business.id}
-      )
-    """;
-
-    if (params.subEntities.isNotEmpty) {
-      var ids = "(${account.business.id},";
-      params.subEntities.asMap().forEach((index, value) {
-          ids += "$value";
-          if (index < params.subEntities.length -1) {
-            ids += ",";
-          }
-      });
-      ids += ")";
-      businessIds = """
-      (
-      SELECT _business.id
-      FROM _business
-      WHERE _business.id IN $ids
-      AND _business.parent_id = ${account.business.id}
-      OR _business.id = ${account.business.id}
-      )
-      """;
-    }
-
     final querySql = """
       SELECT Count(_visit.id)
       FROM _visit
-      WHERE _visit.business_id IN $businessIds
+      WHERE _visit.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, account.business.id)}
       AND _visit.date >= '${morning.toIso8601String()}'::date
       AND _visit.date <= '${tomorrow.toIso8601String()}'::date;
       """;

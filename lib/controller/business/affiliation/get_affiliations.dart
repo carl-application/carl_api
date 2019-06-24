@@ -23,7 +23,10 @@ class GetAffiliationsController extends ResourceController {
     }
 
     final getAffiliationsQuery = Query<Business>(_context)
-      ..where((business) => business.parent.id).identifiedBy(ownerAccount.business.id);
+      ..where((business) => business.parent.id).identifiedBy(ownerAccount.business.id)
+      ..join(object: (business) => business.logo)
+      ..join(object: (business) => business.image)
+      ..returningProperties((business) => [business.name, business.address, business.image, business.logo]);
 
     return Response.ok(await getAffiliationsQuery.fetch());
   }

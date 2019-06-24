@@ -1,5 +1,6 @@
 class Utils {
-  static String getAnalyticsAffiliationBusinessSearchQuery(List<int> subEntities, int currentBusinessId) {
+  static String getAnalyticsAffiliationBusinessSearchQuery(List<int> subEntities, int currentBusinessId,
+      {bool showCurrentWhenSubEntities}) {
     var businessIds = """
       (
       SELECT _business.id
@@ -23,9 +24,13 @@ class Utils {
       FROM _business
       WHERE _business.id IN $ids
       AND _business.parent_id = $currentBusinessId
-      OR _business.id = $currentBusinessId
-      )
+      
       """;
+
+      if (showCurrentWhenSubEntities != null && showCurrentWhenSubEntities) {
+        businessIds += "\nOR _business.id = $currentBusinessId";
+      }
+      businessIds += ")";
     }
 
     return businessIds;

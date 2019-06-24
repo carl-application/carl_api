@@ -41,7 +41,7 @@ class BusinessSexParityController extends ResourceController {
     INNER JOIN _user
     ON _customerrelationship.user_id = _user.id
     AND _user.sex = '$sex'
-    AND _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, businessId)};
+    AND _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, businessId, showCurrentWhenSubEntities: params.showCurrentWhenSubEntities)};
     """;
   }
 }

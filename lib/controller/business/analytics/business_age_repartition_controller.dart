@@ -1,9 +1,9 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
-import 'package:carl_api/utils.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_customers_by_age_item_count_response.dart';
+import 'package:carl_api/utils.dart';
 
 class BusinessAgeRepartitionController extends ResourceController {
   BusinessAgeRepartitionController(this._context);
@@ -62,7 +62,7 @@ class BusinessAgeRepartitionController extends ResourceController {
     ON _customerrelationship.user_id = _user.id
     WHERE date_part('year',age(birthdate)) > $ageMin
     AND date_part('year',age(birthdate)) <= $ageMax
-    AND _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, businessId)};
+    AND _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, businessId, showCurrentWhenSubEntities: params.showCurrentWhenSubEntities)};
     """;
   }
 }

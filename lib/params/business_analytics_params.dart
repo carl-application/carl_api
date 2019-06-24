@@ -1,14 +1,19 @@
 import 'package:carl_api/carl_api.dart';
 
 class BusinessAnalyticsParams implements Serializable {
-  BusinessAnalyticsParams({this.dateSent, this.subEntities});
+  BusinessAnalyticsParams({this.dateSent, this.subEntities, this.showCurrentWhenSubEntities});
 
   DateTime dateSent;
   List<int> subEntities;
+  bool showCurrentWhenSubEntities;
 
   @override
   Map<String, dynamic> asMap() {
-    final map = {"dateSent": dateSent.toIso8601String(), "subEntities": subEntities.toList()};
+    final map = {
+      "dateSent": dateSent.toIso8601String(),
+      "subEntities": subEntities.toList(),
+      "showCurrentWhenSubEntities": showCurrentWhenSubEntities
+    };
 
     return map;
   }
@@ -31,6 +36,7 @@ class BusinessAnalyticsParams implements Serializable {
 
   void _fromMap(Map<String, dynamic> map) {
     dateSent = map["date"] != null ? DateTime.tryParse(map["date"] as String) : DateTime.now().toUtc();
+    showCurrentWhenSubEntities = map["showCurrentWhenSubEntities"] != null ? map["showCurrentWhenSubEntities"] as bool : false;
     subEntities = (map["subEntities"] as List<dynamic>)?.map((dynamicId) => dynamicId as int)?.toList();
   }
 }

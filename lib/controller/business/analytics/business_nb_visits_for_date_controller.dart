@@ -66,7 +66,7 @@ class BusinessNbVisitsForDateController extends ResourceController {
     final querySql = """
       SELECT Count(_visit.id)
       FROM _visit
-      WHERE _visit.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, account.business.id)}
+      WHERE _visit.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, account.business.id, showCurrentWhenSubEntities: params.showCurrentWhenSubEntities)}
       AND _visit.date >= '${morning.toIso8601String()}'::date
       AND _visit.date <= '${tomorrow.toIso8601String()}'::date;
       """;

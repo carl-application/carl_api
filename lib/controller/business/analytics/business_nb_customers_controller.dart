@@ -1,9 +1,9 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
-import 'package:carl_api/utils.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_count_for_date_response.dart';
+import 'package:carl_api/utils.dart';
 
 class BusinessNbCustomersController extends ResourceController {
   BusinessNbCustomersController(this._context);
@@ -62,7 +62,7 @@ class BusinessNbCustomersController extends ResourceController {
     final querySql = """
       SELECT Count(_customerrelationship.id)
       FROM _customerrelationship
-      WHERE _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, account.business.id)}
+      WHERE _customerrelationship.business_id IN ${Utils.getAnalyticsAffiliationBusinessSearchQuery(params.subEntities, account.business.id, showCurrentWhenSubEntities: params.showCurrentWhenSubEntities)}
       AND _customerrelationship.date <= '${tomorrowMorning.toIso8601String()}'::date;
       """;
 

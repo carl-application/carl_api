@@ -1,6 +1,6 @@
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
-import 'package:carl_api/controller/utils.dart';
+import 'package:carl_api/utils.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/params/business_analytics_params.dart';
 import 'package:carl_api/response/business_customers_by_age_item_count_response.dart';

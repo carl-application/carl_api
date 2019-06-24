@@ -4,8 +4,7 @@ class Utils {
       (
       SELECT _business.id
       FROM _business
-      WHERE _business.parent_id = $currentBusinessId
-      OR _business.id = $currentBusinessId
+      WHERE _business.id = $currentBusinessId
       )
     """;
 

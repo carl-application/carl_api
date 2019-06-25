@@ -1,5 +1,6 @@
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/business.dart';
+import 'package:carl_api/response/password_error.dart';
 
 import '../carl_api.dart';
 import '../model/user.dart';
@@ -21,6 +22,26 @@ class RegisterController extends ResourceController {
       return Response.badRequest(body: {"error": "missing a linked user or business"});
     }
 
+    if (account.password.length < 6) {
+      return Response.unauthorized(body: PasswordError());
+    }
+
+    var hasUppercase = false;
+    var hasNumber = false;
+    for (var index = 0; index < account.password.length; index++) {
+      if (_isNumeric(account.password[index])) {
+        hasNumber = true;
+      } else {
+        if (account.password[index] == account.password[index].toUpperCase()) {
+          hasUppercase = true;
+        }
+      }
+    }
+
+    if (!hasNumber || !hasUppercase) {
+      return Response.unauthorized(body: PasswordError());
+    }
+
     account
       ..salt = AuthUtility.generateRandomSalt()
       ..hashedPassword = _authServer.hashPassword(account.password, account.salt);
@@ -34,13 +55,11 @@ class RegisterController extends ResourceController {
         ..values = account
         ..values.user = user;
     } else {
-      print("account.business.affiliationKey = ${account.business.affiliationKey}");
       if (account.business.affiliationKey != null) {
         final getParentQuery = Query<Business>(_context)
           ..where((business) => business.affiliationKey).identifiedBy(account.business.affiliationKey);
 
         final parentBusiness = await getParentQuery.fetchOne();
-        print("Found parent business = ${parentBusiness.name}");
 
         account.business.parent = parentBusiness;
       }
@@ -90,5 +109,12 @@ class RegisterController extends ResourceController {
       final userSchema = context.document.components.resolve(userSchemaRef);
       userRegistration.properties.addAll(userSchema.properties);
     });
+  }
+
+  bool _isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return int.tryParse(s) != null;
   }
 }

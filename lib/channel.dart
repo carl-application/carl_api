@@ -295,14 +295,6 @@ class CarlApiChannel extends ApplicationChannel {
         .link(() => Authorizer.bearer(authServer))
         .link(() => UserNotificationsBlackListController(context));
 
-    /* Handle user subscription payment
-    router
-        .route("/user/subscribe")
-        .link(() => Authorizer.bearer(authServer))
-        .link(() => SubscriptionPaymentController(context, stripeKey));
-
-      */
-
     return router;
   }
 

@@ -48,16 +48,21 @@ class UserController extends ResourceController {
     return Response.ok(updatedUser);
   }
 
-  @Operation.delete("id")
-  Future<Response> deleteUser(@Bind.path("id") int id) async {
-    if (request.authorization.ownerID != id) {
+  @Operation.delete()
+  Future<Response> deleteUser() async {
+    final getUserQuery = Query<User>(_context)
+      ..where((user) => user.account.id).identifiedBy(request.authorization.ownerID);
+
+    final user = await getUserQuery.fetchOne();
+
+    if (user == null) {
       return Response.unauthorized();
     }
 
-    final query = Query<User>(_context)..where((user) => user.id).equalTo(id);
-    await _authServer.revokeAllGrantsForResourceOwner(id);
-    await query.delete();
+    final accountQuery = Query<Account>(_context)
+    ..where((account) => account.user.id).identifiedBy(user.id);
 
-    return Response.ok(null);
+    return Response.ok(await accountQuery.delete());
+
   }
 }

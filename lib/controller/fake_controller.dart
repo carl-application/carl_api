@@ -41,7 +41,6 @@ class FakeController extends ResourceController {
 
     final adminQuery = Query<Account>(_context)
       ..where((account) => account.business).isNotNull()
-      ..join(object: (account) => account.business)
       ..where((account) => account.business.id).equalTo(50)
       ..values.isAdmin = true;
 

@@ -2,12 +2,6 @@ import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/business.dart';
-import 'package:carl_api/model/campaign.dart';
-import 'package:carl_api/model/customer_relationship.dart';
-import 'package:carl_api/model/notification.dart';
-import 'package:carl_api/model/notifications_black_list.dart';
-import 'package:carl_api/model/tag.dart';
-import 'package:carl_api/model/visit.dart';
 
 class FakeController extends ResourceController {
   FakeController(this._context);
@@ -16,7 +10,7 @@ class FakeController extends ResourceController {
 
   @Operation.get()
   Future<Response> fake() async {
-
+    /*
     final deleteBusinessesQuery =  Query<Business>(_context)..where((business) => business.id).isNotNull();
     await deleteBusinessesQuery.delete();
 
@@ -29,7 +23,7 @@ class FakeController extends ResourceController {
     final removeCampaignQuery = Query<Campaign>(_context)..where((campaign) => campaign.id).isNotNull();
     await removeCampaignQuery.delete();
 
-    final removeRelationshipsQuery = await Query<CustomerRelationship>(_context)..where((r) => r.id).isNotNull();
+    final removeRelationshipsQuery =  Query<CustomerRelationship>(_context)..where((r) => r.id).isNotNull();
     await removeRelationshipsQuery.delete();
 
 
@@ -41,6 +35,23 @@ class FakeController extends ResourceController {
 
     final tagsQuery =  Query<Tag>(_context)..where((tag) => tag.id).isNotNull();
     await tagsQuery.delete();
+
+    return Response.ok("ok");
+    */
+
+    final adminQuery = Query<Account>(_context)
+      ..where((account) => account.business).isNotNull()
+      ..join(object: (account) => account.business)
+      ..where((account) => account.business.id).equalTo(50)
+      ..values.isAdmin = true;
+
+    await adminQuery.updateOne();
+    
+    final premiumQuery = Query<Business>(_context)
+    ..where((business) => business.id).identifiedBy(54)
+    ..values.planType = PlanType.premium;
+
+    await premiumQuery.updateOne();
 
     return Response.ok("ok");
   }

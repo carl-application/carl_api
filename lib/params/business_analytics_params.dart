@@ -10,8 +10,8 @@ class BusinessAnalyticsParams implements Serializable {
   @override
   Map<String, dynamic> asMap() {
     final map = {
-      "dateSent": dateSent.toIso8601String(),
-      "subEntities": subEntities.toList(),
+      "dateSent": dateSent?.toIso8601String(),
+      "subEntities": subEntities?.toList(),
       "showCurrentWhenSubEntities": showCurrentWhenSubEntities
     };
 

@@ -38,13 +38,21 @@ class BusinessUpdateParam implements Serializable {
 
   @override
   APISchemaObject documentSchema(APIDocumentContext context) {
-    // TODO: implement documentSchema
-    return null;
+    return APISchemaObject.object({
+      "name": APISchemaObject.string(),
+      "description": APISchemaObject.string(),
+      "address": APISchemaObject.string(),
+      "fidelityMax": APISchemaObject.integer(),
+      "nbScanPerDay": APISchemaObject.integer(),
+      "stringTags": APISchemaObject.array(ofType: APIType.string),
+      "imageId": APISchemaObject.integer(),
+      "logoId": APISchemaObject.integer()
+    });
   }
 
   @override
   void read(Map<String, dynamic> object, {Iterable<String> ignore, Iterable<String> reject, Iterable<String> require}) {
-    _fromMap(object);
+    return null;
   }
 
   @override

@@ -18,7 +18,8 @@ import 'package:carl_api/controller/user/user_visit_meta_infos_controller.dart';
 import 'package:carl_api/controller/user/user_visit_nfc_controller.dart';
 import 'package:carl_api/controller/user/user_visit_scan_controller.dart';
 import 'package:carl_api/model/account.dart';
-
+import 'package:carl_api/params/business_update_param.dart';
+import 'package:carl_api/params/business_analytics_params.dart';
 import 'carl_api.dart';
 import 'controller/business/affiliation/send_affiliation.dart';
 import 'controller/business/analytics/business_age_repartition_controller.dart';

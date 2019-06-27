@@ -20,13 +20,16 @@ class BusinessAnalyticsParams implements Serializable {
 
   @override
   APISchemaObject documentSchema(APIDocumentContext context) {
-    // TODO: implement documentSchema
-    return null;
+    return APISchemaObject.object({
+      "dateSent": APISchemaObject.string(),
+      "subEntities": APISchemaObject.array(ofType: APIType.integer),
+      "showCurrentWhenSubEntities": APISchemaObject.boolean()
+    });
   }
 
   @override
   void read(Map<String, dynamic> object, {Iterable<String> ignore, Iterable<String> reject, Iterable<String> require}) {
-    _fromMap(object);
+    return null;
   }
 
   @override
@@ -36,7 +39,8 @@ class BusinessAnalyticsParams implements Serializable {
 
   void _fromMap(Map<String, dynamic> map) {
     dateSent = map["date"] != null ? DateTime.tryParse(map["date"] as String) : DateTime.now().toUtc();
-    showCurrentWhenSubEntities = map["showCurrentWhenSubEntities"] != null ? map["showCurrentWhenSubEntities"] as bool : false;
+    showCurrentWhenSubEntities =
+        map["showCurrentWhenSubEntities"] != null ? map["showCurrentWhenSubEntities"] as bool : false;
     subEntities = (map["subEntities"] as List<dynamic>)?.map((dynamicId) => dynamicId as int)?.toList();
   }
 }

@@ -1,8 +1,13 @@
-import 'dart:math';
-
 import 'package:aqueduct/aqueduct.dart';
 import 'package:carl_api/carl_api.dart';
+import 'package:carl_api/model/account.dart';
+import 'package:carl_api/model/business.dart';
+import 'package:carl_api/model/campaign.dart';
 import 'package:carl_api/model/customer_relationship.dart';
+import 'package:carl_api/model/notification.dart';
+import 'package:carl_api/model/notifications_black_list.dart';
+import 'package:carl_api/model/tag.dart';
+import 'package:carl_api/model/visit.dart';
 
 class FakeController extends ResourceController {
   FakeController(this._context);
@@ -11,34 +16,31 @@ class FakeController extends ResourceController {
 
   @Operation.get()
   Future<Response> fake() async {
-    return Response.ok("not implemented");
-    final usersIds = [8, 9, 10];
-    const businessId = 5;
 
-    for (var i = 0; i < usersIds.length; i++) {
-      final randomMonth = Random().nextInt(6) + 1;
-      final randomDay = Random().nextInt(30) + 1;
-      final relationshipDate = DateTime(2019, randomMonth, randomDay);
-      final previousRelationshipQuery = Query<CustomerRelationship>(_context)
-        ..where((relationship) => relationship.business.id).equalTo(businessId)
-        ..where((relationship) => relationship.user.id).equalTo(usersIds[i]);
-      final previousRelationship = await previousRelationshipQuery.fetchOne();
+    final deleteBusinessesQuery =  Query<Business>(_context)..where((business) => business.id).isNotNull();
+    await deleteBusinessesQuery.delete();
+    final Query deleteVisitsQuery =  Query<Visit>(_context)..where((visit) => visit.id).isNotNull();
+    await deleteVisitsQuery.delete();
 
-      if (previousRelationship != null) {
-        await _updateRelationshipDate(relationshipDate, businessId, usersIds[i]);
-      } else {
+    final deleteAllBusinessesAccountQuery = Query<Account>(_context)..where((account) => account.business).isNotNull();
+    await deleteAllBusinessesAccountQuery.delete();
 
-      }
-    }
+    final removeCampaignQuery = Query<Campaign>(_context)..where((campaign) => campaign.id).isNotNull();
+    await removeCampaignQuery.delete();
+
+    final removeRelationshipsQuery = await Query<CustomerRelationship>(_context)..where((r) => r.id).isNotNull();
+    await removeRelationshipsQuery.delete();
+
+
+    final notificationQuery = Query<Notification>(_context)..where((notif) => notif.id).isNotNull();
+    await notificationQuery.delete();
+
+     final nQuery = Query<NotificationsBlackListed>(_context)..where((n) => n.id).isNotNull();
+     await nQuery.delete();
+
+    final tagsQuery =  Query<Tag>(_context)..where((tag) => tag.id).isNotNull();
+    await tagsQuery.delete();
 
     return Response.ok("ok");
-  }
-
-  _updateRelationshipDate(DateTime newDate, int businessId, int userId) async {
-    final updateQuery = Query<CustomerRelationship>(_context)
-      ..values.date = newDate
-      ..where((relationship) => relationship.business.id).equalTo(businessId)
-      ..where((relationship) => relationship.user.id).equalTo(userId);
-    await updateQuery.updateOne();
   }
 }

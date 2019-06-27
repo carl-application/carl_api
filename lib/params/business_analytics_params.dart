@@ -29,7 +29,7 @@ class BusinessAnalyticsParams implements Serializable {
 
   @override
   void read(Map<String, dynamic> object, {Iterable<String> ignore, Iterable<String> reject, Iterable<String> require}) {
-    return null;
+    _fromMap(object);
   }
 
   @override

@@ -19,10 +19,11 @@ class FakeController extends ResourceController {
 
     final deleteBusinessesQuery =  Query<Business>(_context)..where((business) => business.id).isNotNull();
     await deleteBusinessesQuery.delete();
+
     final Query deleteVisitsQuery =  Query<Visit>(_context)..where((visit) => visit.id).isNotNull();
     await deleteVisitsQuery.delete();
 
-    final deleteAllBusinessesAccountQuery = Query<Account>(_context)..where((account) => account.business).isNotNull();
+    final deleteAllBusinessesAccountQuery = Query<Account>(_context)..where((account) => account.user).isNull();
     await deleteAllBusinessesAccountQuery.delete();
 
     final removeCampaignQuery = Query<Campaign>(_context)..where((campaign) => campaign.id).isNotNull();

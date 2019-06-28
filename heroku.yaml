@@ -3,3 +3,4 @@ firebaseServerKey: $FIREBASE_SERVER_KEY
 stripeKey: $STRIPE_KEY
 mailJetKey: $MAIL_KEY
 mailJetSecret: $MAIL_SECRET
+geocodingApiKey: $GEOCODING_API_KEY

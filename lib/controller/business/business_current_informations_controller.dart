@@ -5,11 +5,13 @@ import 'package:carl_api/model/business.dart';
 import 'package:carl_api/model/image.dart';
 import 'package:carl_api/model/tag.dart';
 import 'package:carl_api/params/business_update_param.dart';
+import 'package:google_maps_webservice/places.dart';
 
 class BusinessCurrentInformationsController extends ResourceController {
-  BusinessCurrentInformationsController(this._context);
+  BusinessCurrentInformationsController(this._context, this.geocodingAPiKey);
 
   final ManagedContext _context;
+  String geocodingAPiKey;
 
   @Operation.get()
   Future<Response> getBusinessInformations() async {
@@ -100,6 +102,14 @@ class BusinessCurrentInformationsController extends ResourceController {
       await Future.wait(tagQueries);
     }
 
+    if (updateParams.address != null) {
+      final places = GoogleMapsPlaces(apiKey: geocodingAPiKey);
+      PlacesSearchResponse response = await places.searchByText(updateParams.address);
+      final location = response.results.first.geometry.location;
+      currentBusiness.latitude = location.lat;
+      currentBusiness.longitude = location.lng;
+    }
+
     final updateBusinessQuery = Query<Business>(_context)
       ..where((business) => business.id).equalTo(currentBusiness.id)
       ..values.name = updateParams.name ?? currentBusiness.name
@@ -107,6 +117,8 @@ class BusinessCurrentInformationsController extends ResourceController {
       ..values.address = updateParams.address ?? currentBusiness.address
       ..values.fidelityMax = updateParams.fidelityMax ?? currentBusiness.fidelityMax
       ..values.nbScanPerDay = updateParams.nbScanPerDay ?? currentBusiness.nbScanPerDay
+      ..values.longitude = currentBusiness.longitude
+      ..values.latitude = currentBusiness.latitude
       ..values.image = image
       ..values.logo = logo;
 

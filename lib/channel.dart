@@ -10,6 +10,7 @@ import 'package:carl_api/controller/business/business_card_image_controller.dart
 import 'package:carl_api/controller/business/business_controller.dart';
 import 'package:carl_api/controller/business/business_logo_controller.dart';
 import 'package:carl_api/controller/business/business_tags_controller.dart';
+import 'package:carl_api/controller/businesses_locations.dart';
 import 'package:carl_api/controller/image_controller.dart';
 import 'package:carl_api/controller/user/user_cards_controller.dart';
 import 'package:carl_api/controller/user/user_notifications_blacklist_controller.dart';
@@ -18,8 +19,7 @@ import 'package:carl_api/controller/user/user_visit_meta_infos_controller.dart';
 import 'package:carl_api/controller/user/user_visit_nfc_controller.dart';
 import 'package:carl_api/controller/user/user_visit_scan_controller.dart';
 import 'package:carl_api/model/account.dart';
-import 'package:carl_api/params/business_update_param.dart';
-import 'package:carl_api/params/business_analytics_params.dart';
+
 import 'carl_api.dart';
 import 'controller/business/affiliation/send_affiliation.dart';
 import 'controller/business/analytics/business_age_repartition_controller.dart';
@@ -53,6 +53,7 @@ class CarlApiChannel extends ApplicationChannel {
   String stripeKey;
   String mailJetKey;
   String mailJetSecret;
+  String geocodingApiKey;
 
   /// Initialize services in this method.
   ///
@@ -75,6 +76,7 @@ class CarlApiChannel extends ApplicationChannel {
     stripeKey = config.stripeKey;
     mailJetKey = config.mailJetKey;
     mailJetSecret = config.mailJetSecret;
+    geocodingApiKey = config.geocodingApiKey;
     context = contextWithConnectionInfo(config.database);
 
     final authStorage = ManagedAuthDelegate<Account>(context);
@@ -101,7 +103,7 @@ class CarlApiChannel extends ApplicationChannel {
     router
         .route("/register")
         .link(() => Authorizer.basic(authServer))
-        .link(() => RegisterController(context, authServer));
+        .link(() => RegisterController(context, authServer, geocodingApiKey));
 
     /* Handle Admin accounts */
     router.route("/admin/[:userId]").link(() => Authorizer.bearer(authServer)).link(() => AdminController(context));
@@ -152,13 +154,19 @@ class CarlApiChannel extends ApplicationChannel {
     router
         .route("/business/infos")
         .link(() => Authorizer.bearer(authServer))
-        .link(() => BusinessCurrentInformationsController(context));
+        .link(() => BusinessCurrentInformationsController(context, geocodingApiKey));
 
     /* Handle Business campaigns with bearer token */
     router
         .route("/business/campaigns")
         .link(() => Authorizer.bearer(authServer))
         .link(() => BusinessCampaignsController(context));
+
+    /* Handle Business locations */
+    router
+        .route("/business/locations")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => UserBusinessesLocations(context));
 
     /* Handle Business campaigns  notifications with bearer token */
     router
@@ -326,4 +334,5 @@ class CarlApiConfiguration extends Configuration {
   String stripeKey;
   String mailJetKey;
   String mailJetSecret;
+  String geocodingApiKey;
 }

@@ -1,15 +1,17 @@
 import 'package:carl_api/model/account.dart';
 import 'package:carl_api/model/business.dart';
 import 'package:carl_api/response/password_error.dart';
+import "package:google_maps_webservice/places.dart";
 
 import '../carl_api.dart';
 import '../model/user.dart';
 
 class RegisterController extends ResourceController {
-  RegisterController(this._context, this._authServer);
+  RegisterController(this._context, this._authServer, this.geocodingAPiKey);
 
   final ManagedContext _context;
   final AuthServer _authServer;
+  final String geocodingAPiKey;
 
   @Operation.post()
   Future<Response> createUser(@Bind.body() Account account) async {
@@ -62,6 +64,15 @@ class RegisterController extends ResourceController {
         final parentBusiness = await getParentQuery.fetchOne();
 
         account.business.parent = parentBusiness;
+      }
+
+      if (account.business.address != null) {
+        final places = GoogleMapsPlaces(apiKey: geocodingAPiKey);
+        PlacesSearchResponse response = await places.searchByText(account.business.address);
+        final location = response.results.first.geometry.location;
+
+        account.business.latitude = location.lat;
+        account.business.longitude = location.lng;
       }
       final insertBusinessQuery = Query<Business>(_context)..values = account.business;
       final business = await insertBusinessQuery.insert();

@@ -54,6 +54,12 @@ class _Business {
   @Column(nullable: false)
   String address;
 
+  @Column(nullable: true)
+  double latitude;
+
+  @Column(nullable: true)
+  double longitude;
+
   @Column(nullable: false)
   int fidelityMax;
 

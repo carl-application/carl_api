@@ -10,7 +10,6 @@ class UserBusinessesLocations extends ResourceController {
 
   @Operation.get()
   Future<Response> getBusinessesLocations() async {
-    print("in function");
     final getAccountQuery = Query<Account>(_context)
       ..where((account) => account.id).identifiedBy(request.authorization.ownerID);
 
@@ -20,8 +19,6 @@ class UserBusinessesLocations extends ResourceController {
       return Response.unauthorized();
     }
 
-    print("OK");
-
     final getBusinessesLocations = Query<Business>(_context)
     ..where((business) => business.id).isNotNull()
     ..returningProperties((business) => [business.name, business.address, business.latitude, business.longitude])
@@ -29,8 +26,6 @@ class UserBusinessesLocations extends ResourceController {
       .returningProperties((tag) => [tag.name])
     ..join(object: (business) => business.logo)
       .returningProperties((image) => [image.url]);
-
-    print("OK2");
 
     return Response.ok(await getBusinessesLocations.fetch());
   }

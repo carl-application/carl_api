@@ -42,8 +42,6 @@ class BusinessSendNotificationToCampaignController extends ResourceController {
 
     final campaign = await getCampaignQuery.fetchOne();
 
-    print("campaign found = ${campaign.name}");
-
     var querySql = """
     SELECT _user.notificationstoken, _user.id
     FROM _user

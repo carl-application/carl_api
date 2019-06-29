@@ -2,6 +2,7 @@ import 'package:carl_api/controller/admin/admin_controller.dart';
 import 'package:carl_api/controller/admin/admin_get_businesses_controller.dart';
 import 'package:carl_api/controller/admin/admin_make_premium_controller.dart';
 import 'package:carl_api/controller/admin/admin_middleware_controller.dart';
+import 'package:carl_api/controller/admin/admin_send_notifications.dart';
 import 'package:carl_api/controller/admin/image_admin_controller.dart';
 import 'package:carl_api/controller/business/affiliation/get_affiliations.dart';
 import 'package:carl_api/controller/business/business_campaigns_controller.dart';
@@ -110,6 +111,12 @@ class CarlApiChannel extends ApplicationChannel {
 
     /* Handle Settings for admin */
     router.route("/admin/settings").link(() => Authorizer.bearer(authServer)).link(() => SettingsController(context));
+
+    /* Handle Admin sending notifications*/
+    router
+        .route("/admin/notification")
+        .link(() => Authorizer.bearer(authServer))
+        .link(() => BusinessSendNotifications(context, firebaseServerKey));
 
     /* Handle Images accessible for admin */
     router

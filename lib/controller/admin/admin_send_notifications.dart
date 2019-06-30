@@ -12,14 +12,14 @@ import 'package:http/http.dart' as http;
 
 import '../../constants.dart';
 
-class BusinessSendNotifications extends ResourceController {
-  BusinessSendNotifications(this._context, this.firebaseServerKey);
+class AdminSendNotificationsController extends ResourceController {
+  AdminSendNotificationsController(this._context, this.firebaseServerKey);
 
   final ManagedContext _context;
   final String firebaseServerKey;
 
   @Operation.post()
-  Future<Response> sendNotificationToCampaign(
+  Future<Response> adminSendNotificationToCampaign(
     @Bind.query("title") String title,
     @Bind.query("description") String description,
   ) async {

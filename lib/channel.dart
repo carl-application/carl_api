@@ -112,7 +112,7 @@ class CarlApiChannel extends ApplicationChannel {
     router
         .route("/admin/notification")
         .link(() => Authorizer.bearer(authServer))
-        .link(() => BusinessSendNotifications(context, firebaseServerKey));
+        .link(() => AdminSendNotificationsController(context, firebaseServerKey));
 
     /* Handle Images accessible for admin */
     router
@@ -140,9 +140,6 @@ class CarlApiChannel extends ApplicationChannel {
 
     /* Handle logos accessible for anyone */
     router.route("/logos").link(() => LogosController(context));
-
-    /* Handle visits */
-    router.route("/visit").link(() => Authorizer.bearer(authServer)).link(() => UserVisitController(context));
 
     /* Handle Other Business profile with bearer token */
     router.route("/business/[:id]").link(() => Authorizer.bearer(authServer)).link(() => BusinessController(context));

@@ -9,7 +9,7 @@ class AdminGetBusinessesController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.get()
-  Future<Response> getBusinesses() async {
+  Future<Response> adminGetBusinesses() async {
     final getBusinessesQuery = Query<Business>(_context)
       ..returningProperties((business) => [
         business.name,

@@ -8,7 +8,7 @@ class UserVisitController extends ResourceController {
   final ManagedContext _context;
 
   @Operation.get()
-  Future<Response> getVisitsOfOneBusiness(
+  Future<Response> getVisitsForBusinessById(
     @Bind.query('businessId') int businessId,
     @Bind.query("lastFetchedDate") String date,
     @Bind.query("fetchLimit") int fetchLimit,

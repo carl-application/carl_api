@@ -32,7 +32,6 @@ import 'controller/business/business_current_informations_controller.dart';
 import 'controller/business/business_send_notification_controller.dart';
 import 'controller/business/business_send_notification_to_campaign_controller.dart';
 import 'controller/business/current_business_controller.dart';
-import 'controller/fake_controller.dart';
 import 'controller/logos_controller.dart';
 import 'controller/register_controller.dart';
 import 'controller/settings_controller.dart';
@@ -96,9 +95,6 @@ class CarlApiChannel extends ApplicationChannel {
 
     /* OAuth 2.0 Endpoints */
     router.route("/auth/token").link(() => AuthController(authServer));
-
-    /* Create and delete fake datas */
-    router.route("/fake").link(() => Authorizer.basic(authServer)).link(() => FakeController(context));
 
     /* Create an account */
     router

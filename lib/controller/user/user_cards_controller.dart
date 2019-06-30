@@ -18,15 +18,13 @@ class UserCardsController extends ResourceController {
       return Response.unauthorized();
     }
 
-    print("User = ${user.toString()}, ${user.id}");
-
-    final test = Query<User>(_context)
+    final usersQuery = Query<User>(_context)
       ..where((user) => user.id).equalTo(user.id)
       ..join(set: (user) => user.visits).join(object: (visit) => visit.business);
 
-    final tmp = await test.fetch();
+    final users = await usersQuery.fetch();
 
-    final businesses = tmp.expand((u) => u.visits.map((v) => v.business));
+    final businesses = users.expand((u) => u.visits.map((v) => v.business));
 
     return Response.ok(businesses.toSet().toList());
   }

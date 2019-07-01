@@ -114,9 +114,9 @@ class CarlApiChannel extends ApplicationChannel {
         .link(() => Authorizer.bearer(authServer))
         .link(() => AdminSendNotificationsController(context, firebaseServerKey));
 
-    /* Handle Images accessible for admin */
+    /* Handle getting or deleting businesses for admin */
     router
-        .route("/admin/business")
+        .route("/admin/business/[:id]")
         .link(() => Authorizer.bearer(authServer))
         .link(() => AdminMiddlewareController(context))
         .link(() => AdminGetBusinessesController(context));

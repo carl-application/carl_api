@@ -28,7 +28,7 @@ class AdminGetBusinessesController extends ResourceController {
   }
 
   @Operation.delete("id")
-  Future<Response> deleteBusiness(@Bind.path("id") int businessId) async {
+  Future<Response> adminDeleteBusiness(@Bind.path("id") int businessId) async {
     final accountQuery = Query<Account>(_context)
       ..where((account) => account.business).isNotNull()
       ..where((account) => account.business.id).identifiedBy(businessId);

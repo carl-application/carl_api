@@ -1,5 +1,5 @@
 import 'package:carl_api/controller/admin/admin_controller.dart';
-import 'package:carl_api/controller/admin/admin_get_businesses_controller.dart';
+import 'package:carl_api/controller/admin/admin_businesses_controller.dart';
 import 'package:carl_api/controller/admin/admin_make_premium_controller.dart';
 import 'package:carl_api/controller/admin/admin_middleware_controller.dart';
 import 'package:carl_api/controller/admin/admin_send_notifications.dart';
